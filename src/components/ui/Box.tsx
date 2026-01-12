@@ -1,29 +1,39 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes } from "react";
 
 interface BoxProps extends HTMLAttributes<HTMLDivElement> {
-    imgSrc: string
-    dark?: boolean
+  imgSrc: string;
+  dark?: boolean;
 }
 
-const Box = ({imgSrc, className, dark = false, ...props }: BoxProps) => {
-    return (<div className={cn(
-        "relative pointer-events-none z-50 overflow-hidden", 
+const Box = ({ imgSrc, className, dark = false, ...props }: BoxProps) => {
+  return (
+    <div
+      className={cn(
+        "relative pointer-events-none z-50 overflow-hidden",
         className
-    )}
-    {...props}>
-        <img src={dark ? "/phone-template-dark-edges.png"
+      )}
+      {...props}
+    >
+      <img
+        src={
+          dark
+            ? "/phone-template-dark-edges.png"
             : "/phone-template-white-edges.png"
-        } 
+        }
         className="pointer-events-none z-50 select-none"
-        alt= "phone image"
+        alt="phone image"
       />
-
+      
       <div className="absolute -z-10 inset-0">
-        <img className="object-cover" src={imgSrc}/>
+        <img
+          className="object-cover"
+          src={imgSrc}
+          alt="overlaying phone image"
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Box
+export default Box;
