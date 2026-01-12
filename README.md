@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌱 Vegan Festbox - 純素生活定制化訂閱平台
 
-## Getting Started
+這個專案的初衷是想結合我對 **Vegan (純素)** 生活的推廣與技術實作。專案架構參考了 **Josh tried coding** 的 **CaseCobra**，這是一個基於 **Next.js 14** 打造的電商專案，目的是為用戶提供直覺、現代化的 Vegan 禮盒訂閱體驗。
 
-First, run the development server:
+## ✨ 特色功能 (Features)
 
+* **Next.js 14 App Router**：利用最新架構提升開發效率與載入速度。
+* **響應式設計**：適配所有行動裝置。
+* **客製化流程**：仿照高階配置器的邏輯，讓用戶能直覺地挑選純素產品。
+* **100% TypeScript**：確保程式碼的穩定性與型別安全。
+* **簡潔現代的 UI**：基於 shadcn/ui 與 Tailwind CSS 打造。
+
+## 🛠️ 技術棧 (Tech Stack)
+
+* **Framework**: Next.js 14 (App Router)
+* **Language**: TypeScript
+* **Styling**: Tailwind CSS
+* **Components**: Shadcn UI & Lucide Icons
+* **Icons**: Lucide React
+* **Deployment**: Vercel
+
+## 🚀 快速開始 (Getting started)
+
+若要在本地環境運行此專案，請執行以下步驟：
+
+**Clone 專案：**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/pinchen-dev/vegan-festbox.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**安裝與開發：**
+``` bash
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📢 開發進度與計畫
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+目前專案還在積極開發中，我正分階段將教學素材替換成真正的純素產品視覺。
 
-## Learn More
+- [x] 建立基礎組件邏輯 (Box.tsx, MaxWidthWrapper.tsx)
 
-To learn more about Next.js, take a look at the following resources:
+- [ ] 替換全站為 Vegan 主題資產 (進行中)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [ ] 實作 Navbar 與移動端選單
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] 整合 Kinde 身份驗證與金流串接
