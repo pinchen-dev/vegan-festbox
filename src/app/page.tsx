@@ -13,7 +13,7 @@ export default function Home() {
               <div className="absolute w-32 left-0 -top-20 hidden lg:block">
                 <img src="/veganbox-1.png" className="w-full" />
               </div>
-              <h1 className="relative w-fit tracking-tight text-balance mt-16 font-bold leading-tight! text-grey-900 text-5xl md:text-6xl lg:text-7xl">您的專屬 <span className="bg-emerald-600 px-2 text-white">純素生活</span> 定制提案
+              <h1 className="relative w-fit tracking-tight text-balance mt-16 font-bold leading-tight! text-grey-900 text-5xl md:text-6xl lg:text-7xl">您的專屬 <span className="bg-primary px-2 text-white">純素生活</span> 定制提案
               </h1>
               <p className="mt-8 text-lg lg:pr-10 max-w-prose text-center lg:text-left text-balance md:text-wrap">
               「不只是美味。從零殘忍居家用品到純素零食，我們為您<span className="font-semibold">量身打造</span>每次的驚喜。
