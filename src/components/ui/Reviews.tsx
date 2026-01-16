@@ -59,9 +59,17 @@ function ReviewColumn({
         <div 
         ref={colunmRef}
         className={cn("animate-marquee space-y-8 py-4", className)}
-        style={{"--marquee-duration": duration} as React.CSSProperties}></div>
+        style={{"--marquee-duration": duration} as React.CSSProperties}>
+          {reviews.concat(reviews).map((imgSrc, reviewIndex) => (
+            <Review />
+          ))}
+        </div>
     )
 
+}
+
+function Review({}) {
+  
 }
 
 function ReviewGrid() {
