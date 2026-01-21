@@ -1,8 +1,8 @@
 import Link from "next/link";
-import MaxWidthWrapper from "./MaxWidthWrapper";
-import { buttonVariants } from "./button";
 import { ArrowRight } from "lucide-react";
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { buttonVariants } from "./ui/button";
+import MaxWidthWrapper from "./ui/MaxWidthWrapper";
 
 const Navbar = async() => {
   const { getUser } = getKindeServerSession()
