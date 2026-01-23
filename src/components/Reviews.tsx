@@ -1,9 +1,9 @@
 "use client";
 import { HTMLAttributes, useEffect, useRef, useState } from "react";
-import MaxWidthWrapper from "./MaxWidthWrapper";
+import MaxWidthWrapper from "../components/MaxWidthWrapper";
 import { useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import Box from "./Box";
+import Box from "../components/Box";
 
 const PHONES = [
   "/testimonials/1.jpg",
@@ -96,7 +96,7 @@ function Review({ imgSrc, className, ...props }: ReviewProps) {
     <div
       className={cn(
         "animate-fade-in rounded-[2.25rem] bg-white p-6 opacity-0 shadow-xl shadow-slate-900/5",
-        className
+        className,
       )}
       style={{ animationDelay }}
       {...props}
