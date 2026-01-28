@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Configuration {
+  id              String  @id @default(cuid())
+  width           Int
+  height          Int
+  imageUrl        String
+  croppedImageUrl String?
+}
