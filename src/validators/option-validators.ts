@@ -19,7 +19,7 @@ export const MODELS = {
   options: [
     {
       label: "iPhone X",
-      value: "iphone",
+      value: "iphonex",
     },
     {
       label: "iPhone 11",
