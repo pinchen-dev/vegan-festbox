@@ -27,7 +27,7 @@ const Box = ({ imgSrc, className, dark = false, ...props }: BoxProps) => {
       
       <div className="absolute -z-10 inset-0">
         <img
-          className="object-cover"
+          className="object-cover min-w-full min-h-full"
           src={imgSrc}
           alt="overlaying phone image"
         />
