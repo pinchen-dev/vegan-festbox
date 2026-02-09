@@ -1,22 +1,29 @@
 "use client";
 
 import Box from "@/components/Box";
-import { COLORS, MODELS } from "@/validators/option-validators";
+import { COLORS, FINISHES, MODELS } from "@/validators/option-validators";
 import { Configuration } from "@prisma/client";
 import { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
-import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { cn, formatPrice } from "@/lib/utils";
+import { ArrowRight, Check } from "lucide-react";
+import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products";
+import { Button } from "@headlessui/react";
 
 const DesignPreview = ({ configuration }: {configuration: Configuration }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   useEffect(() => setShowConfetti(true));
 
-  const { color, model } = configuration
+  const { color, model, finish, material } = configuration
   const tw = COLORS.find((supportedColor) => 
   supportedColor.value === color)?.tw
 
   const { label: modelLabel } = MODELS.options.find(({value}) => value === model)!
+
+  let totalPrice = BASE_PRICE
+  if (material === "polycarbonate")
+    totalPrice += PRODUCT_PRICES.material.polycarbonate
+   if (finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured
 
   return (
     <>
@@ -57,6 +64,58 @@ const DesignPreview = ({ configuration }: {configuration: Configuration }) => {
                 <li>Packaging made from recycled materials</li>
                 <li>5 year print warranty</li>
               </ol>
+            </div>
+            <div>
+              <p className="font-medium text-zinc-950">Materials</p>
+              <ol className="mt-3 text-zinc-700 list-disc list-inside">
+                <li>High-quality, durable material</li>
+                <li>Scratch- and fingerprint resistant coating</li>
+              </ol>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div className="bg-gray-50 p-6 sm:rounded-lg sm:p-8">
+              <div className="flow-root text-sm">
+                <div className="flex items-center justify-between py-1 mt-2">
+                  <p className="text-gray-600">Base price</p>
+                  <p className="font-medium text-gray-900">
+                    {formatPrice(BASE_PRICE / 100)}
+                  </p>
+                </div>
+
+                {finish === "textured" ? (
+                  <div className="flex items-center justify-between py-1 mt-2">
+                  <p className="text-gray-600">Textured finish</p>
+                  <p className="font-medium text-gray-900">
+                    {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
+                  </p>
+                </div>
+                ): null}
+
+                {material === "polycarbonate" ? (
+                  <div className="flex items-center justify-between py-1 mt-2">
+                  <p className="text-gray-600">Soft polycarbonate material</p>
+                  <p className="font-medium text-gray-900">
+                    {formatPrice(PRODUCT_PRICES.material.polycarbonate / 100)}
+                  </p>
+                </div>
+                ): null}
+
+                <div className="my-2 h-px bg-gray-200" />
+
+                <div className="flex items-center justify-between py-2">
+                  <p className="font-semibold text-gray-900">Order total</p>
+                  <p className="font-semibold text-gray-900">
+                    {formatPrice(totalPrice / 100)}
+                    {}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end pb-12">
+              <Button>Check out </Button>
             </div>
           </div>
         </div>
