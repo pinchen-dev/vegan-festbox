@@ -13,9 +13,12 @@ import { useMutation } from "@tanstack/react-query";
 import { createCheckoutSession } from "./action";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs"
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
-  const router = useRouter() 
+  const router = useRouter();
+  const { id } = configuration
+  const { user } = useKindeBrowserClient()
 
   const [showConfetti, setShowConfetti] = useState(false);
   useEffect(() => setShowConfetti(true));
@@ -34,19 +37,28 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     totalPrice += PRODUCT_PRICES.material.polycarbonate;
   if (finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured;
 
-const { mutate: createPaymentSession } = useMutation({
-  mutationKey: ["get-checkout-session"],
-  mutationFn: createCheckoutSession,
-  onSuccess: ({url}) => {
-    if (url) router.push(url)
-      else throw new Error("Unable to retrieve payment URL.")
-  },
-  onError: () => {
-        toast.error("Something went wrong", {
-          description: "There was an error on our end. Please try again.",
-        });
-      },
-})
+  const { mutate: createPaymentSession } = useMutation({
+    mutationKey: ["get-checkout-session"],
+    mutationFn: createCheckoutSession,
+    onSuccess: ({ url }) => {
+      if (url) router.push(url);
+      else throw new Error("Unable to retrieve payment URL.");
+    },
+    onError: () => {
+      toast.error("Something went wrong", {
+        description: "There was an error on our end. Please try again.",
+      });
+    },
+  })
+
+  const handleCheckout = () => {
+    if (user) {
+      
+    } else {
+      localStorage.setItem("configurationId", id)
+
+    }
+  }
 
   return (
     <>
@@ -143,11 +155,11 @@ const { mutate: createPaymentSession } = useMutation({
 
             <div className="mt-8 flex justify-end pb-12">
               <Button
-              onClick={() => createPaymentSession({configId: configuration.id})}
-               disabled={true}
-                isLoading={false}
-                loadingText="loading"
-                className="px-4 sm:px-6 lg:px-8">
+                onClick={() =>
+                  createPaymentSession({ configId: configuration.id })
+                }
+                className="px-4 sm:px-6 lg:px-8"
+              >
                 Check out <ArrowRight className="h-4 w-4 ml-1.5 inline" />
               </Button>
             </div>
