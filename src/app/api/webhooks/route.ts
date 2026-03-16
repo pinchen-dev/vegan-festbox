@@ -37,10 +37,6 @@ export async function POST(req: Request) {
       const billingAddress = session.customer_details?.address;
       const shippingAddress = session.shipping_details?.address;
 
-      if (!billingAddress || !shippingAddress) {
-        throw new Error("Missing address");
-      }
-
       await db.order.update({
         where: {
           id: orderId,
