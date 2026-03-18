@@ -34,8 +34,13 @@ export async function POST(req: Request) {
         throw new Error("Invalid request metadata");
       }
 
+      const customerName = session.customer_details?.name
       const billingAddress = session.customer_details?.address;
       const shippingAddress = session.shipping_details?.address;
+
+if (!customerName || !shippingAddress?.line1 || !shippingAddress?.city) {
+  return new Response("缺少必要的收件資訊", { status: 400 });
+}
 
       await db.order.update({
         where: {
@@ -45,22 +50,24 @@ export async function POST(req: Request) {
           isPaid: true,
           shippingAddress: {
             create: {
-              name: session.customer_details?.name?? "Customer",
-              city: shippingAddress?.city?? "",
-              country: shippingAddress?.country?? "",
-              postalCode: shippingAddress?.postal_code?? "",
-              street: shippingAddress?.line1?? "",
-              state: shippingAddress?.state?? "",
+              name:  customerName,
+              city: shippingAddress?.city ?? "",
+              country: shippingAddress?.country ?? "",
+              postalCode: shippingAddress?.postal_code ?? "",
+              street1: shippingAddress?.line1 ?? "",
+              street2: shippingAddress?.line2 ?? "",
+              state: shippingAddress?.state ?? "",
             },
           },
           billingAddress: {
             create: {
-              name: session.customer_details?.name?? "Customer",
-              city: billingAddress?.city?? "",
-              country: billingAddress?.country??"",
-              postalCode: billingAddress?.postal_code??"",
-              street: billingAddress?.line1??"",
-              state: billingAddress?.state??"",
+              name: customerName,
+              city: billingAddress?.city ?? "",
+              country: billingAddress?.country ?? "",
+              postalCode: billingAddress?.postal_code ?? "",
+              street1: billingAddress?.line1 ?? "",
+              street2: billingAddress?.line2 ?? "",
+              state: billingAddress?.state ?? "",
             },
           },
         },
