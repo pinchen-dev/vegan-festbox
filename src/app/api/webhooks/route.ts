@@ -76,7 +76,10 @@ if (!customerName || !shippingAddress?.line1 || !shippingAddress?.city) {
 
     return NextResponse.json({ result: event, ok: true });
   } catch (err) {
-    console.error(err);
+    if (err instanceof Error) {
+    console.error("詳細報錯訊息:", err.message);
+    console.error("錯誤堆疊:", err.stack);
+  }
 
     return NextResponse.json(
       { message: "Something went wrong", ok: false },
