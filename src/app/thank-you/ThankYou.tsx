@@ -89,14 +89,18 @@ const ThankYou = () => {
             <div className="mt-2 text-zinc-700">
               <address className="not-italic">
                 <span className="block">{shippingAddress?.name}</span>
-                <span className="block">{shippingAddress?.street}</span>
-                <span className="block">
-                 {shippingAddress?.postalCode} {shippingAddress?.city}
+                <span className="block">{shippingAddress?.street1}</span>
+                {shippingAddress?.street2 && (
+                    <span className="block">{shippingAddress?.street2}</span>
+                    )}
+                 <span className="block">
+                    {shippingAddress?.postalCode} {shippingAddress?.city}
                 </span>
-                <pre className="text-xs text-gray-500">
-  {JSON.stringify(shippingAddress, null, 2)}
-</pre>
               </address>
+
+              <pre className="mt-4 text-[10px] text-gray-400 bg-gray-50 p-2 rounded">
+        {JSON.stringify(shippingAddress, null, 2)}
+        </pre>
             </div>
           </div>
         </div>
