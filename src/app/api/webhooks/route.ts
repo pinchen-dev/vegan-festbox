@@ -16,14 +16,11 @@ export async function POST(req: Request) {
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!,
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
+
     if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session & {
-        shipping_details?: {
-          address?: Stripe.Address;
-        };
-      };
+      const session = event.data.object as Stripe.Checkout.Session;
 
       const { userId, orderId } = session.metadata || {
         userId: null,
@@ -34,56 +31,90 @@ export async function POST(req: Request) {
         throw new Error("Invalid request metadata");
       }
 
-      const customerName = session.customer_details?.name
-      const billingAddress = session.customer_details?.address;
-      const shippingAddress = session.shipping_details?.address;
+      const order = await db.order.findUnique({
+        where: { id: orderId },
+        include: {
+          shippingAddress: true,
+          billingAddress: true,
+        },
+      });
 
-if (!customerName || !shippingAddress?.line1 || !shippingAddress?.city) {
-  return new Response("缺少必要的收件資訊", { status: 400 });
-}
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      if (order.isPaid) {
+        return NextResponse.json({ ok: true });
+      }
+
+      const customerName = session.customer_details?.name ?? "";
+      const billingAddress = session.customer_details?.address;
+      const shippingAddress =
+        session.collected_information?.shipping_details?.address;
+
+      if (!customerName || !shippingAddress?.line1 || !shippingAddress?.city) {
+        return NextResponse.json({ ok: true });
+      }
 
       await db.order.update({
-        where: {
-          id: orderId,
-        },
+        where: { id: orderId },
         data: {
           isPaid: true,
+
           shippingAddress: {
-            create: {
-              name:  customerName,
-              city: shippingAddress?.city ?? "",
-              country: shippingAddress?.country ?? "",
-              postalCode: shippingAddress?.postal_code ?? "",
-              street1: shippingAddress?.line1 ?? "",
-              street2: shippingAddress?.line2 ?? "",
-              state: shippingAddress?.state ?? "",
+            upsert: {
+              create: {
+                name: customerName,
+                city: shippingAddress.city ?? "",
+                country: shippingAddress.country ?? "",
+                postalCode: shippingAddress.postal_code ?? "",
+                street1: shippingAddress.line1 ?? "",
+                street2: shippingAddress.line2 ?? "",
+                state: shippingAddress.state ?? "",
+              },
+              update: {
+                name: customerName,
+                city: shippingAddress.city ?? "",
+                country: shippingAddress.country ?? "",
+                postalCode: shippingAddress.postal_code ?? "",
+                street1: shippingAddress.line1 ?? "",
+                street2: shippingAddress.line2 ?? "",
+                state: shippingAddress.state ?? "",
+              },
             },
           },
+
           billingAddress: {
-            create: {
-              name: customerName,
-              city: billingAddress?.city ?? "",
-              country: billingAddress?.country ?? "",
-              postalCode: billingAddress?.postal_code ?? "",
-              street1: billingAddress?.line1 ?? "",
-              street2: billingAddress?.line2 ?? "",
-              state: billingAddress?.state ?? "",
+            upsert: {
+              create: {
+                name: customerName,
+                city: billingAddress?.city ?? "",
+                country: billingAddress?.country ?? "",
+                postalCode: billingAddress?.postal_code ?? "",
+                street1: billingAddress?.line1 ?? "",
+                street2: billingAddress?.line2 ?? "",
+                state: billingAddress?.state ?? "",
+              },
+              update: {
+                name: customerName,
+                city: billingAddress?.city ?? "",
+                country: billingAddress?.country ?? "",
+                postalCode: billingAddress?.postal_code ?? "",
+                street1: billingAddress?.line1 ?? "",
+                street2: billingAddress?.line2 ?? "",
+                state: billingAddress?.state ?? "",
+              },
             },
           },
         },
       });
     }
 
-    return NextResponse.json({ result: event, ok: true });
+    return NextResponse.json({ ok: true });
   } catch (err) {
-    if (err instanceof Error) {
-    console.error("詳細報錯訊息:", err.message);
-    console.error("錯誤堆疊:", err.stack);
-  }
-
     return NextResponse.json(
       { message: "Something went wrong", ok: false },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
