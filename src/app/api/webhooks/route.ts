@@ -3,6 +3,10 @@ import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
 import { db } from "@/db";
 import { NextResponse } from "next/server";
+import { Resend } from "resend"
+import OrderReceivedEmail from "@/components/emails/OrderRecievedEmail";
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: Request) {
   try {
@@ -51,12 +55,13 @@ export async function POST(req: Request) {
       const billingAddress = session.customer_details?.address;
       const shippingAddress =
         session.collected_information?.shipping_details?.address;
+        
 
       if (!customerName || !shippingAddress?.line1 || !shippingAddress?.city) {
         return NextResponse.json({ ok: true });
       }
 
-      await db.order.update({
+      const updatedOrder = await db.order.update({
         where: { id: orderId },
         data: {
           isPaid: true,
@@ -108,6 +113,26 @@ export async function POST(req: Request) {
           },
         },
       });
+
+      await resend.emails.send({
+        from: "Vegan Festbox <a5190279@gmail.com>",
+        to: [event.data.object.customer_details!.email!],
+        subject: "Thanks for your order!",
+        react: OrderReceivedEmail({
+          orderId,
+          orderDate: updatedOrder.createdAt.toLocaleDateString(),
+          // @ts-ignore
+          shippingAddress: {
+            name: customerName,
+                city: billingAddress?.city ?? "",
+                country: billingAddress?.country ?? "",
+                postalCode: billingAddress?.postal_code ?? "",
+                street1: billingAddress?.line1 ?? "",
+                street2: billingAddress?.line2 ?? "",
+                state: billingAddress?.state ?? "",
+          }
+        })
+      })
     }
 
     return NextResponse.json({ ok: true });
