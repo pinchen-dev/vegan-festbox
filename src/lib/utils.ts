@@ -7,17 +7,24 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const formatPrice = (price: number) => {
-  const formatter = new Intl.NumberFormat("en-US", {
+  const formatter = new Intl.NumberFormat("zh-TW", {
     style: "currency",
-    currency: "USD",
+    currency: "TWD",
+    minimumFractionDigits: 0,
   })
 
   return formatter.format(price)
 }
 
+export const ORDER_STATUS_LABELS: Record<string, string> = {
+  awaiting_shipment: "待出貨",
+  shipped: "已出貨",
+  fulfilled: "已完成",
+}
+
 export function constructMetadata({
-  title = "Vegan Festbox - custom high quality phone cases",
-  description = "Create high-quality phone case in seconds",
+  title = "Vegan Festbox - 專屬您的純素客製禮盒",
+  description = "只需幾秒鐘，即可打造高品質且友善地球的純素禮盒",
   image = "/thumbnail.png",
   icons = "/favicon.ico",
 }: {
@@ -32,7 +39,7 @@ export function constructMetadata({
     openGraph: {
       title,
       description,
-      images: [{url: image}],
+      images: [{ url: image }],
     },
     twitter: {
       card: "summary_large_image",
@@ -42,5 +49,6 @@ export function constructMetadata({
       creator: "@pinchen",
     },
     icons,
+    metadataBase: new URL("https://vegan-festbox.vercel.app"),
   }
 }

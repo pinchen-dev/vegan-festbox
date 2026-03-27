@@ -25,24 +25,24 @@ const config = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: '#065f46',
+          foreground: '#ffffff',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: '#f5f5f0',
+          foreground: '#44403c',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: '#f5f5f4',
+          foreground: '#78716c', 
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: '#ecf3ec',
+          foreground: '#065f46',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
@@ -60,17 +60,11 @@ const config = {
       },
       keyframes: {
         'fade-in': {
-          from: {
-            opacity: '0',
-          },
-          to: {
-            opacity: '1',
-          },
+          from: { opacity: '0' },
+          to: { opacity: '1' },
         },
         marquee: {
-          '100%': {
-            transform: 'translateY(-50%)',
-          },
+          '100%': { transform: 'translateY(-50%)' },
         },
         flashing: {
           '0%, 100%': { opacity: '0.2' },

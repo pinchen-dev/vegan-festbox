@@ -8,14 +8,16 @@ const Navbar = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   const isAdmin = user?.email === process.env.ADMIN_EMAIL;
+
   return (
-    <nav className="sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
+    <nav className="sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-stone-200 bg-white/80 backdrop-blur-md transition-all">
       <MaxWidthWrapper>
-        <div className="flex h-14 items-center justify-between border-b border-zinc-200">
-          <Link href="/" className="flex z-40 font-semibold">
-            case<span className="text-green-600">cobra</span>
+        <div className="flex h-14 items-center justify-between">
+          <Link href="/" className="flex z-40 font-bold text-xl tracking-tighter text-primary">
+            Vegan<span className="text-secondary">festbox</span>
           </Link>
-          <div className="h-full flex items-center space-x-4">
+
+          <div className="h-full flex items-center space-x-6">
             {user ? (
               <>
                 <Link
@@ -23,9 +25,10 @@ const Navbar = async () => {
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
+                    className: "text-stone-600 hover:text-stone-900"
                   })}
                 >
-                  Sign out
+                  登出
                 </Link>
                 {isAdmin ? (
                   <Link
@@ -33,20 +36,21 @@ const Navbar = async () => {
                     className={buttonVariants({
                       size: "sm",
                       variant: "ghost",
+                      className: "text-stone-600 hover:text-stone-900"
                     })}
                   >
-                    Dashboard 
+                    管理後台 
                   </Link>
                 ) : null}
                 <Link
-                  href="/configure/upload"
+                  href="/configure/select"
                   className={buttonVariants({
                     size: "sm",
-                    className: "hidden sm:flex items-center gap-1",
+                    className: "hidden sm:flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-all",
                   })}
                 >
-                  Create case
-                  <ArrowRight className="ml-1.5 h-5 w-5" />
+                  客製專屬禮盒
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </>
             ) : (
@@ -56,9 +60,10 @@ const Navbar = async () => {
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
+                    className: "text-stone-600 hover:text-stone-900"
                   })}
                 >
-                  Sign up
+                  註冊
                 </Link>
 
                 <Link
@@ -66,20 +71,23 @@ const Navbar = async () => {
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
+                    className: "text-stone-600 hover:text-stone-900"
                   })}
                 >
-                  Login
+                  登入
                 </Link>
-                <div className="h-8 w-px bg-zinc-200 hidden sm:block " />
+
+                <div className="h-6 w-px bg-stone-200 hidden sm:block " />
+
                 <Link
                   href="/configure/upload"
                   className={buttonVariants({
                     size: "sm",
-                    className: "hidden sm:flex items-center gap-1",
+                    className: "hidden sm:flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-all",
                   })}
                 >
-                  Create case
-                  <ArrowRight className="ml-1.5 h-5 w-5" />
+                  開始客製
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </>
             )}

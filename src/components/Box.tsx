@@ -3,35 +3,25 @@ import { HTMLAttributes } from "react";
 
 interface BoxProps extends HTMLAttributes<HTMLDivElement> {
   imgSrc: string;
-  dark?: boolean;
 }
 
-const Box = ({ imgSrc, className, dark = false, ...props }: BoxProps) => {
+const Box = ({ imgSrc, className, ...props }: BoxProps) => {
   return (
     <div
       className={cn(
         "relative pointer-events-none z-50 overflow-hidden",
-        className
+        "aspect-square rounded-2xl bg-card shadow-2xl ring-1 ring-stone-200/50",
+        className,
       )}
       {...props}
     >
       <img
-        src={
-          dark
-            ? "/phone-template-dark-edges.png"
-            : "/phone-template-white-edges.png"
-        }
-        className="pointer-events-none z-50 select-none"
-        alt="phone image"
+        className="object-cover w-full h-full select-none"
+        src={imgSrc}
+        alt="Vegan Festbox Unboxing Experience"
       />
-      
-      <div className="absolute -z-10 inset-0">
-        <img
-          className="object-cover min-w-full min-h-full"
-          src={imgSrc}
-          alt="overlaying phone image"
-        />
-      </div>
+
+      <div className="absolute inset-0 bg-stone-900/5 opacity-5 pointer-events-none" />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Recursive } from 'next/font/google'
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -21,9 +20,10 @@ export default function RootLayout({
       <body className={recursive.className}>
         <Navbar />
 
-        <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
+        <main className="flex flex-col min-h-[calc(100vh-3.5rem-1px)] bg-primary-foreground">
           <div className="flex-1 flex flex-col h-full">
-            <Providers>{children}</Providers></div>
+            <Providers>{children}</Providers>
+          </div>
           <Footer />
         </main>
 

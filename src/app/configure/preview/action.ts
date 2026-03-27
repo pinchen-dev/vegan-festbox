@@ -3,81 +3,109 @@
 import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products"
 import { db } from "@/db"
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
-import { Order } from "@prisma/client"
-import { stripe } from "@/lib/stripe"
+import crypto from "crypto"
 
-export const createCheckoutSession = async ({configId,
-
-}: {
-    configId: string
-}) => {
+export const createCheckoutSession = async ({ configId }: { configId: string }) => {
     const configuration = await db.configuration.findUnique({
         where: { id: configId },
     })
 
     if (!configuration) {
-        throw new Error("No such configuration found")
+        throw new Error("找不到該配置資訊")
     }
 
     const { getUser } = getKindeServerSession()
     const user = await getUser()
 
-    if (!user) {
-        throw new Error("You need to be logged in")
+    if (!user || !user.id) {
+        throw new Error("您需要先登入")
     }
 
-    const { finish, material } = configuration
+    const { boxSet, finish, decoration } = configuration
 
     let price = BASE_PRICE
-    if (finish === "textured") price += PRODUCT_PRICES.finish.textured
-    if (material === "polycarbonate")
-        price += PRODUCT_PRICES.material.polycarbonate
 
-    let order: Order | undefined = undefined
+    if (boxSet && boxSet in PRODUCT_PRICES.boxSet) {
+        price += PRODUCT_PRICES.boxSet[boxSet as keyof typeof PRODUCT_PRICES.boxSet]
+    }
+    if (finish && finish in PRODUCT_PRICES.finish) {
+        price += PRODUCT_PRICES.finish[finish as keyof typeof PRODUCT_PRICES.finish]
+    }
+    if (decoration && decoration in PRODUCT_PRICES.decoration) {
+        price += PRODUCT_PRICES.decoration[decoration as keyof typeof PRODUCT_PRICES.decoration]
+    }
 
-    const existingOrder = await db.order.findFirst({
+    let order = await db.order.findFirst({
         where: {
             userId: user.id,
             configurationId: configuration.id,
         },
     })
 
-    console.log(user.id, configuration.id)
-
-    if (existingOrder) {
-        order = existingOrder
-    } else {
+    if (!order) {
         order = await db.order.create({
             data: {
-                amount: price / 100,
+                amount: price,
                 userId: user.id,
                 configurationId: configuration.id,
-            }
+            },
         })
     }
 
-    const product = await stripe.products.create({
-        name: "Custom iPhone Case",
-        images: [configuration.imageUrl],
-        default_price_data: {
-            currency: "USD",
-            unit_amount: price,
-        },
-    })
+    const MerchantID = process.env.ECPAY_MERCHANT_ID!
+    const HashKey = process.env.ECPAY_HASH_KEY!
+    const HashIV = process.env.ECPAY_HASH_IV!
 
-    const stripeSession = await stripe.checkout.sessions.create({
-        success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure/preview?id=${configuration.id}`,
-        payment_method_types: ["card"],
-        mode: "payment",
-        shipping_address_collection: { allowed_countries: ["DE", "US"]},
-        billing_address_collection: "required",
-        metadata: {
-            userId: user.id,
-            orderId: order.id,
-        },
-        line_items: [{price: product.default_price as string, quantity: 1 }],
-    })
+    const MerchantTradeDate = new Date().toLocaleString('zh-TW', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).replace(/-/g, '/')
 
-    return { url: stripeSession.url }
-}    
+    const baseParams = {
+        MerchantID,
+        MerchantTradeNo: `VFB${order.id.slice(-10)}${Date.now().toString().slice(-5)}`,
+        MerchantTradeDate,
+        PaymentType: 'aio',
+        TotalAmount: Math.round(price).toString(),
+        TradeDesc: 'Vegan Festbox 純素客製禮盒',
+        ItemName: '純素客製禮盒套組',
+        ReturnURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api/webhooks/ecpay`,
+        OrderResultURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
+        ChoosePayment: 'ALL',
+        EncryptType: '1',
+    }
+
+    const sortedParams = Object.keys(baseParams)
+        .sort()
+        .map((key) => `${key}=${baseParams[key as keyof typeof baseParams]}`)
+        .join('&')
+
+    const checkValue = `HashKey=${HashKey}&${sortedParams}&HashIV=${HashIV}`
+
+    const CheckMacValue = crypto
+        .createHash('sha256')
+        .update(
+            encodeURIComponent(checkValue)
+                .toLowerCase()
+                .replace(/%20/g, '+')
+                .replace(/%2d/g, '-')
+                .replace(/%5f/g, '_')
+                .replace(/%2e/g, '.')
+                .replace(/%21/g, '!')
+                .replace(/%2a/g, '*')
+                .replace(/%28/g, '(')
+                .replace(/%29/g, ')')
+        )
+        .digest('hex')
+        .toUpperCase()
+
+    return {
+        url: 'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5',
+        params: { ...baseParams, CheckMacValue },
+    }
+}
