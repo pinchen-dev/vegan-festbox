@@ -1,7 +1,12 @@
+import { Suspense } from "react";
 import UploadCard from "./UploadCard";
 
 const Page = () => {
-  return <UploadCard />;
+  return (
+    <Suspense fallback={null}>
+      <UploadCard />
+    </Suspense>
+  );
 };
 
 export default Page;
