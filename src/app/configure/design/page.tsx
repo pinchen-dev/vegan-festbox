@@ -3,9 +3,7 @@ import { notFound } from "next/navigation"
 import DesignConfigurator from "./DesignConfigurator"
 
 interface PageProps {
-  searchParams: {
-    [key: string]: string | string[] | undefined
-  }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 const Page = async ({ searchParams }: PageProps) => {
@@ -19,21 +17,18 @@ const Page = async ({ searchParams }: PageProps) => {
     where: { id },
   })
 
-  if (!configuration) {
-    return notFound()
-  }
-
-  const { imageUrl, width, height } = configuration
-
+  if (!configuration || !configuration.imageUrl) {
+  return notFound()
+}
   return (
     <DesignConfigurator
       configId={configuration.id}
-      imageDimensions={{ 
-      width: width ?? 0, 
-      height: height ?? 0 
-    }}
-    imageUrl={imageUrl!}
-  />
+      imageDimensions={{
+        width: configuration.width ?? 0,
+        height: configuration.height ?? 0,
+      }}
+      imageUrl={configuration.imageUrl}
+    />
   )
 }
 

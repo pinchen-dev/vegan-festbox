@@ -112,10 +112,13 @@
 }
 
 .seal-perspective {
-  transform: perspective(1000px) rotateX(70deg) rotateY(-3deg) rotateZ(-36deg);
-  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.1));
-  contrast: 1.1;
+  transform: perspective(1000px) rotateX(70deg) rotateY(-2deg) rotateZ(-37deg);
+  filter: drop-shadow(-0.5px -0.5px 0.5px rgba(255, 255, 255, 0.4))
+    drop-shadow(1px 1px 1.5px rgba(0, 0, 0, 0.25))
+    drop-shadow(3px 3px 4px rgba(0, 0, 0, 0.1));
+  contrast: 1.15;
   brightness: 1.1;
+  saturate: 1.05;
 }
 
 .plant-perspective {

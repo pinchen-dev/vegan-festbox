@@ -2,7 +2,7 @@
 
 import { useUploadThing } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
-import { ImageIcon, Loader2, RefreshCw, RotateCcw } from "lucide-react";
+import { ImageIcon, Loader2, RefreshCw, RotateCcw, ChevronLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition, useRef } from "react";
 import Dropzone from "react-dropzone";
@@ -10,6 +10,7 @@ import ReactCrop, { type Crop, PixelCrop, centerCrop, makeAspectCrop } from "rea
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { BackButton } from "@/components/ui/back-botton";
 
 const UploadCard = () => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
@@ -127,12 +128,20 @@ const UploadCard = () => {
           z-index: 20 !important;
         }
       `}</style>
+      <div className="mb-6">
+      <BackButton/>
+    </div>
       <div className="flex items-center gap-2 mb-2">
-        <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">Step 2</span>
-        <h2 className="tracking-tight font-black text-3xl text-zinc-900">上傳照片</h2>
+        
+        <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
+          Step 2
+        </span>
+        <h2 className="tracking-tight font-black text-3xl text-zinc-900">
+          上傳照片
+        </h2>
       </div>
 
-      <div className="relative w-full rounded-2xl bg-white ring-1 ring-zinc-200 overflow-hidden">
+      <div className="relative w-full rounded-2xl bg-white/70 ring-1 ring-zinc-200 overflow-hidden">
         {!imageUrl ? (
           <Dropzone 
             onDropAccepted={(files) => {
@@ -150,7 +159,7 @@ const UploadCard = () => {
                 <div className="p-4 rounded-full bg-zinc-50 mb-4 text-zinc-400">
                   <ImageIcon className="h-8 w-8" />
                 </div>
-                <p className="text-xl font-bold text-zinc-800">上傳照片客製個人小卡</p>
+                <p className="text-xl font-bold text-primary">上傳照片客製個人小卡</p>
                 <div className="flex flex-col items-center gap-1 mt-3">
                   <p className="text-sm text-zinc-500">PNG, JPG, JPEG 格式</p>
                 </div>
@@ -160,7 +169,7 @@ const UploadCard = () => {
         ) : isCropped && croppedImageUrl ? (
           <div className="py-16 flex flex-col items-center bg-zinc-50/30">
             <h3 className="text-4xl font-bold mb-8 text-primary text-center">預覽您的客製卡片</h3>
-            <div className="relative w-80 h-[450px] sm:w-90 sm:h-[520px] bg-[#fdfcfb] rounded-sm p-6 shadow-[10px_10px_25px_rgba(0,0,0,0.05)] border border-zinc-100 flex flex-col overflow-hidden">
+            <div className="relative w-80 h-[450px] sm:w-90 sm:h-[520px] bg-[#fdfcfb] rounded-sm p-6 shadow-xl border border-zinc-100 flex flex-col overflow-hidden">
               <div className="absolute inset-0 opacity-40 pointer-events-none" style={{ backgroundImage: `url("/paper-texture.jpg")` }} />
               <div className="relative w-fit max-w-full mx-auto max-h-[250px] bg-white p-2 shadow-sm border border-zinc-400 rotate-1 mb-8 z-10 flex items-center justify-center overflow-hidden">
                 <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
@@ -178,9 +187,9 @@ const UploadCard = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-4 mt-16">
-              <Button variant="outline" onClick={() => { setIsCropped(false); setCroppedImageUrl(null); }} className="w-44 h-12 rounded-xl border-zinc-300 hover:bg-zinc-50 cursor-pointer">返回調整</Button>
-              <Button onClick={handleFinalUpload} disabled={isUploading || isPending} className="w-44 h-12 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
+            <div className="flex gap-4 mt-16 w-full px-6 max-w-2xl mx-auto">
+              <Button size="lg" variant="outline" onClick={() => { setIsCropped(false); setCroppedImageUrl(null); }} className="flex-1 cursor-pointer">返回調整</Button>
+              <Button size="lg" onClick={handleFinalUpload} disabled={isUploading || isPending} loadingText="上傳中" className="flex-1 cursor-pointer">
                 {(isUploading || isPending) ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "確認並上傳"}
               </Button>
             </div>
@@ -199,14 +208,14 @@ const UploadCard = () => {
               </div>
               <Slider value={[rotation]} min={-180} max={180} step={1} onValueChange={(val) => setRotation(val[0])} className="cursor-pointer" />
               <div className="flex justify-center">
-                 <Button variant="ghost" size="sm" onClick={() => setRotation(0)} className="text-xs text-zinc-400 hover:text-zinc-600 cursor-pointer">重置角度</Button>
+                 <Button variant="ghost" size="sm" onClick={() => setRotation(0)} className="text-s text-zinc-400 hover:text-zinc-600 cursor-pointer">重置角度</Button>
               </div>
             </div>
             <div className="w-full mt-12 flex justify-between items-center border-t pt-8">
-              <Button variant="ghost" onClick={() => setImageUrl(null)} className="text-zinc-500 cursor-pointer">
+              <Button variant="ghost" onClick={() => setImageUrl(null)} className="text-primary text-lg cursor-pointer">
                 <RefreshCw className="w-4 h-4 mr-2" /> 重選照片
               </Button>
-              <Button onClick={handleShowPreview} className="bg-primary text-white px-10 py-6 rounded-2xl font-bold shadow-lg hover:bg-primary/90 transition-all text-sm cursor-pointer">預覽小卡效果</Button>
+              <Button size="lg" onClick={handleShowPreview} className="px-10 cursor-pointer">預覽小卡效果</Button>
             </div>
           </div>
         )}

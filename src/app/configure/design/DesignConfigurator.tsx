@@ -7,7 +7,7 @@ import {
   Radio,
   RadioGroup,
   Label as HeadlessLabel,
-  Description,
+  Description as HeadlessDescription,
 } from "@headlessui/react";
 import { useState, useMemo } from "react";
 import {
@@ -17,37 +17,30 @@ import {
   BOX_SETS,
   MODELS,
 } from "@/validators/option-validators";
-import { Label } from "@/components/ui/label";
+import { Label as ShadcnLabel } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Button } from "@/components/ui/button";
-import {
-  Palette,
-  Sparkles,
-  ArrowRight,
-  Check,
-  ChevronsUpDown,
-} from "lucide-react";
-import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Palette, Sparkles, Layers, ChevronRight, Check, ChevronsUpDown, ChevronLeft } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useMutation } from "@tanstack/react-query";
 import { saveConfig as _saveConfig, SaveConfigArgs } from "./actions";
 import { useRouter } from "next/navigation";
 
 const BOTANICAL_CONFIGS: Record<number, any> = {
-  1: { rotate: -55, scale: 1.3, top: "10%", left: "28%", skew: 30 },
-  2: { rotate: -80, scale: 1.4, top: "21%", left: "49%", skew: 22 },
-  3: { rotate: -70, scale: 1.2, top: "25%", left: "45%", skew: 15 },
-  4: { rotate: -75, scale: 1.5, top: "22%", left: "48%", skew: 20 },
-  5: { rotate: -60, scale: 1.6, top: "23%", left: "47%", skew: 17 },
-  6: { rotate: -85, scale: 1.4, top: "20%", left: "50%", skew: 25 },
-  7: { rotate: -72, scale: 1.3, top: "24%", left: "48%", skew: 19 },
-  8: { rotate: -78, scale: 1.5, top: "22%", left: "49%", skew: 21 },
+  1: { rotate: -82, scale: 1.2, top: "12%", left: "24%", skew: 18 },
+  2: { rotate: -68, scale: 1.4, top: "8%", left: "28%", skew: 22 },
+  3: { rotate: -72, scale: 1.5, top: "9%", left: "20%", skew: 28 },
+  4: { rotate: -60, scale: 1.2, top: "6%", left: "24%", skew: 14 },
+  5: { rotate: -90, scale: 1.6, top: "4%", left: "30%", skew: 16 },
+  6: { rotate: -120, scale: 1.7, top: "3%", left: "20%", skew: 26 },
+  7: { rotate: -68, scale: 1.7, top: "12%", left: "18%", skew: 22 },
+  8: { rotate: -78, scale: 1.7, top: "8%", left: "20%", skew: 18 },
+  9: { rotate: -82, scale: 1.7, top: "12%", left: "22%", skew: 22 },
 };
 
 interface SelectedDecorations {
@@ -74,23 +67,17 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
     });
 
   const [options, setOptions] = useState({
-    color: COLORS[0],
-    model: MODELS.options[0],
-    boxSet: BOX_SETS.options[0],
-    finish: FINISHES.options[0],
+    color: COLORS[0] as (typeof COLORS)[number],
+    model: MODELS.options[0] as (typeof MODELS.options)[number],
+    boxSet: BOX_SETS.options[0] as (typeof BOX_SETS.options)[number],
+    finish: FINISHES.options[0] as (typeof FINISHES.options)[number],
   });
 
   const { mutate: saveConfig, isPending } = useMutation({
     mutationKey: ["save-config"],
-    mutationFn: async (args: SaveConfigArgs) => {
-      return await _saveConfig(args);
-    },
-    onSuccess: () => {
-      router.push(`/configure/preview?id=${configId}`);
-    },
-    onError: (error) => {
-      console.error("儲存失敗:", error);
-    },
+    mutationFn: async (args: SaveConfigArgs) => await _saveConfig(args),
+    onSuccess: () => router.push(`/configure/preview?id=${configId}`),
+    onError: (error) => console.error("儲存失敗:", error),
   });
 
   const botanicalOption = DECORATIONS.options.find(
@@ -103,8 +90,8 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
   );
 
   return (
-    <div className="relative mt-10 grid grid-cols-1 lg:grid-cols-3 mb-20 pb-20 gap-x-8 items-start">
-      <div className="relative h-[30rem] lg:h-[40rem] overflow-hidden col-span-2 w-full flex items-center justify-center rounded-3xl border border-zinc-200 bg-zinc-50/50 lg:sticky lg:top-10">
+    <div className="relative mt-10 grid grid-cols-1 lg:grid-cols-5 mb-20 pb-20 gap-y-8 lg:gap-x-8 items-start">
+      <div className="relative h-[30rem] lg:h-[40rem] overflow-hidden col-span-1 lg:col-span-3 w-full flex items-center justify-center rounded-3xl border border-primary/10 bg-white/60 backdrop-blur-md shadow-sm lg:sticky lg:top-10">
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none p-12">
           <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
             <div className="relative w-full h-full">
@@ -125,27 +112,24 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
               />
 
               {options.finish.value !== "standard" && (
-                <div
-                  className="absolute inset-0 z-25 transition-opacity duration-500"
-                  style={{
-                    backgroundImage: `url('/${options.finish.value === "recycled" ? "paper" : "linen"}-texture.jpg')`,
-                    backgroundSize: "cover",
-                    maskImage: "url('/box.png')",
-                    WebkitMaskImage: "url('/box.png')",
-                    maskSize: "contain",
-                    WebkitMaskSize: "contain",
-                    maskPosition: "center",
-                    WebkitMaskPosition: "center",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskRepeat: "no-repeat",
-                    mixBlendMode:
-                      options.finish.value === "recycled"
-                        ? "multiply"
-                        : "overlay",
-                    opacity: options.finish.value === "recycled" ? 0.8 : 0.5,
-                  }}
-                />
-              )}
+  <div
+    className="absolute inset-0 z-25 transition-opacity duration-500"
+    style={{
+      backgroundImage: `url('/${options.finish.value === "recycled" ? "paper" : "linen"}-texture.jpg')`,
+      backgroundSize: "cover",
+      maskImage: "url('/box.png')",
+      WebkitMaskImage: "url('/box.png')",
+      maskSize: "contain",
+      WebkitMaskSize: "contain",
+      maskPosition: "center",
+      WebkitMaskPosition: "center",
+      maskRepeat: "no-repeat",
+      WebkitMaskRepeat: "no-repeat",
+      mixBlendMode: options.finish.value === "recycled" ? "multiply" : "overlay",
+      opacity: options.finish.value === "recycled" ? 2.25 : 0.1,
+    }}
+  />
+)}
 
               <NextImage
                 src="/box.png"
@@ -156,18 +140,18 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
               />
 
               {selectedDecorations.twine && (
-                <div className="absolute inset-0 z-40 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <div className="absolute inset-0 z-20 animate-in fade-in slide-in-from-bottom-2 duration-500">
                   <NextImage
                     src="/decorations/twine.png"
                     fill
                     alt="twine"
-                    className="object-cover scale-[1.02]"
+                    className="object-contain scale-[1.15] pointer-events-none"
                   />
                 </div>
               )}
 
               {selectedDecorations.botanical && (
-                <div className="absolute inset-0 z-40 pointer-events-none">
+                <div className="absolute inset-0 z-30 pointer-events-none">
                   <div
                     className="relative w-[40%] aspect-square transition-all duration-300"
                     style={{
@@ -189,7 +173,7 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
               )}
 
               {selectedDecorations.wax_seal && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none animate-in fade-in zoom-in-90 duration-500">
+                <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none animate-in fade-in zoom-in-90 duration-500">
                   <div className="relative w-[18%] aspect-square mt-[-45%] ml-[2%]">
                     <NextImage
                       src={`/decorations/${options.model.value}.png`}
@@ -205,201 +189,230 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
         </div>
       </div>
 
-      <div className="w-full col-span-full lg:col-span-1 flex flex-col bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm mt-8 lg:mt-0">
-        <ScrollArea className="relative flex-1 h-[35rem]">
-          <div className="px-8 pb-12 pt-8">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
-                Step 3
-              </span>
-              <h2 className="tracking-tight font-black text-3xl text-zinc-900">
-                最後修飾
-              </h2>
-            </div>{" "}
-            <div className="flex flex-col gap-10">
-              <RadioGroup
-                value={options.color}
-                onChange={(val) =>
-                  setOptions((prev) => ({ ...prev, color: val }))
-                }
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <Palette className="w-5 h-5 text-primary" />
-                  <Label className="text-base font-bold text-zinc-800">
-                    包裝底色: {options.color.label}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-4">
-                  {COLORS.map((color) => (
-                    <Radio
-                      key={color.value}
-                      value={color}
-                      className={({ checked }) =>
-                        cn(
-                          "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-1 border-2 border-transparent transition-all",
-                          { "border-primary scale-110": checked },
-                        )
-                      }
-                    >
-                      <span
-                        style={{ backgroundColor: color.hex }}
-                        className="h-10 w-10 rounded-full border border-black/10 shadow-inner"
-                      />
-                    </Radio>
-                  ))}
-                </div>
-              </RadioGroup>
+      <div className="w-full col-span-1 lg:col-span-2 flex flex-col bg-white/60 backdrop-blur-md border border-primary/10 rounded-3xl overflow-hidden shadow-sm mt-2 lg:mt-0 lg:sticky lg:top-24 lg:h-[40rem]">
+        <div className="relative flex-1 min-h-0 w-full">
+          <ScrollArea className="h-full w-full">
+            <div className="px-8 pb-12 pt-8 lg:pb-12">
+              <div className="flex items-center gap-2 mb-8">
+        <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
+          Step 3
+        </span>
+        <h2 className="tracking-tight font-black text-3xl text-zinc-900">
+          訂製禮盒
+        </h2>
+      </div>
 
-              <RadioGroup
-                value={options.finish}
-                onChange={(val) =>
-                  setOptions((prev) => ({ ...prev, finish: val }))
-                }
-              >
-                <Label className="text-base font-bold text-zinc-800 mb-4 block">
-                  表面工藝
-                </Label>
-                <div className="grid grid-cols-1 gap-3">
-                  {FINISHES.options.map((option) => (
-                    <Radio
-                      key={option.value}
-                      value={option}
-                      className={({ checked }) =>
-                        cn(
-                          "relative block cursor-pointer rounded-xl bg-white px-6 py-4 border-2 border-zinc-200 transition-all",
-                          { "border-primary bg-primary/5": checked },
-                        )
-                      }
-                    >
-                      <span className="flex justify-between items-center">
-                        <HeadlessLabel className="font-bold text-zinc-900">
-                          {option.label}
-                        </HeadlessLabel>
-                        <span className="text-primary font-black">
-                          {option.price === 0 ? "免費" : `+NT$${option.price}`}
-                        </span>
-                      </span>
-                    </Radio>
-                  ))}
-                </div>
-              </RadioGroup>
-
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-3 p-5 rounded-2xl border-2 border-zinc-200 bg-zinc-50/30">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-base font-bold text-zinc-800">
-                      搭配專屬蠟封
-                    </Label>
-                    <Switch
-                      checked={selectedDecorations.wax_seal}
-                      onCheckedChange={(val) =>
-                        setSelectedDecorations((prev) => ({
-                          ...prev,
-                          wax_seal: val,
-                        }))
-                      }
-                    />
+              <div className="flex flex-col gap-10">
+                <RadioGroup
+                  value={options.color}
+                  onChange={(val) =>
+                    setOptions((prev) => ({ ...prev, color: val }))
+                  }
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <Palette className="w-5 h-5 text-primary" />
+                    <ShadcnLabel className="text-base font-bold text-zinc-800">
+                      包裝底色: {options.color.label}
+                    </ShadcnLabel>
                   </div>
+                  <div className="flex items-center gap-1 space-x-4 ">
+                    {COLORS.map((color) => (
+                      <Radio
+                        key={color.value}
+                        value={color}
+                        className={({ checked }) =>
+                          cn(
+                            "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-1 border-2 border-transparent transition-all",
+                            { "border-primary scale-110": checked },
+                          )
+                        }
+                      >
+                        <span
+                          style={{ backgroundColor: color.hex }}
+                          className="h-10 w-10 rounded-full border border-black/10 shadow-inner"
+                        />
+                      </Radio>
+                    ))}
+                  </div>
+                </RadioGroup>
 
-                  {selectedDecorations.wax_seal && (
-                    <div className="mt-4">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between h-14 px-4 border-zinc-200 rounded-xl bg-white"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="relative h-8 w-8">
-                                <NextImage
-                                  src={`/decorations/${options.model.value}.png`}
-                                  fill
-                                  alt="seal"
-                                  className="object-contain"
-                                />
-                              </div>
-                              <span className="font-bold">
-                                {options.model.label}
-                              </span>
-                            </div>
-                            <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white shadow-xl rounded-xl">
-                          {MODELS.options.map((model) => (
-                            <DropdownMenuItem
-                              key={model.value}
-                              className={cn(
-                                "flex items-center gap-4 p-4 cursor-pointer",
-                                {
-                                  "bg-zinc-50 font-bold":
-                                    model.value === options.model.value,
-                                },
-                              )}
-                              onClick={() =>
-                                setOptions((prev) => ({
-                                  ...prev,
-                                  decoration: model,
-                                }))
-                              }
-                            >
-                              <Check
-                                className={cn(
-                                  "h-4 w-4 text-primary",
-                                  model.value === options.model.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              <div className="relative h-8 w-8">
-                                <NextImage
-                                  src={`/decorations/${model.value}.png`}
-                                  fill
-                                  alt={model.label}
-                                  className="object-contain"
-                                />
-                              </div>
-                              <span>{model.label}</span>
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  )}
-                </div>
+                <RadioGroup
+                  value={options.finish}
+                  onChange={(val) =>
+                    setOptions((prev) => ({ ...prev, finish: val }))
+                  }
+                >
+                  <div className="flex items-center gap-2 mb-4">
+  <Layers className="w-5 h-5 text-primary" />
+                  <ShadcnLabel className="text-base font-bold text-zinc-800 block">
+                    表面工藝
+                  </ShadcnLabel>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
+                   
+                    {FINISHES.options.map((option) => (
+                      <Radio
+                        key={option.value}
+                        value={option}
+                        className={({ checked }) =>
+                          cn(
+                            "relative block cursor-pointer rounded-xl bg-white px-6 py-4 border-2 border-zinc-200 transition-all",
+                            { "border-primary bg-primary/5": checked },
+                          )
+                        }
+                      >
+                        <span className="flex justify-between items-center">
+                          <HeadlessLabel className="font-bold text-zinc-900">
+                            {option.label}
+                          </HeadlessLabel>
+                          <span className="text-primary font-black">
+                            {option.price === 0
+                              ? "免費"
+                              : `+NT$${option.price}`}
+                          </span>
+                        </span>
+                      </Radio>
+                    ))}
+                  </div>
+                </RadioGroup>
+
 
                 <div className="flex flex-col gap-3">
-                  {[twineOption, botanicalOption].map((option) => {
-                    if (!option) return null;
+                   <div className="flex items-center gap-2 mt-4 mb-2">
+  <Sparkles className="w-5 h-5 text-primary" />
+  <ShadcnLabel className="text-base font-bold text-zinc-800">
+    裝飾物
+  </ShadcnLabel>
+</div>
+                  {[
+                    {
+                      option: { label: "搭配專屬蠟封", value: "wax_seal" },
+                      price: 30,
+                    },
+                    { option: twineOption, price: 15 },
+                    { option: botanicalOption, price: 45 },
+                  ].map((item) => {
+                    if (!item.option) return null;
+                    const { option, price } = item;
                     const isSelected =
                       selectedDecorations[
                         option.value as keyof SelectedDecorations
                       ];
+
                     return (
                       <div
                         key={option.value}
                         className={cn(
-                          "flex flex-col gap-3 p-5 rounded-xl border-2 border-zinc-200 transition-all",
-                          { "border-primary bg-primary/5": isSelected },
+                          "flex flex-col gap-3 p-5 rounded-xl border-2 border-zinc-200 transition-all cursor-pointer bg-white",
+                          {
+                            "border-primary bg-primary/[0.02] shadow-sm":
+                              isSelected,
+                          },
                         )}
+                        onClick={() =>
+                          setSelectedDecorations((prev) => ({
+                            ...prev,
+                            [option.value]: !isSelected,
+                          }))
+                        }
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-bold">{option.label}</span>
-                          <Switch
-                            checked={isSelected}
-                            onCheckedChange={(val) =>
-                              setSelectedDecorations((prev) => ({
-                                ...prev,
-                                [option.value]: val,
-                              }))
-                            }
-                          />
+                          <span className="font-bold text-zinc-900">
+                            {option.label}
+                          </span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-primary font-black text-zinc-600">
+                              {price === 0 ? "免費" : `+NT$${price}`}
+                            </span>
+                            <Switch
+                              checked={isSelected}
+                              onCheckedChange={(val) =>
+                                setSelectedDecorations((prev) => ({
+                                  ...prev,
+                                  [option.value]: val,
+                                }))
+                              }
+                            />
+                          </div>
                         </div>
+
+                        {option.value === "wax_seal" && isSelected && (
+                          <div
+                            className="mt-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className="w-full justify-between h-12 px-4 border-zinc-200 rounded-lg bg-white hover:bg-zinc-50"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="relative h-6 w-6">
+                                      <NextImage
+                                        src={`/decorations/${options.model.value}.png`}
+                                        fill
+                                        alt="seal"
+                                        className="object-contain"
+                                      />
+                                    </div>
+                                    <span className="text-sm font-medium">
+                                      {options.model.label}
+                                    </span>
+                                  </div>
+                                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white shadow-xl rounded-xl z-[140]">
+                                {MODELS.options.map((model) => (
+                                  <DropdownMenuItem
+                                    key={model.value}
+                                    className={cn(
+                                      "flex items-center gap-4 p-3 cursor-pointer",
+                                      {
+                                        "bg-zinc-50":
+                                          model.value === options.model.value,
+                                      },
+                                    )}
+                                    onClick={() =>
+                                      setOptions((prev) => ({ ...prev, model }))
+                                    }
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "h-4 w-4 text-primary",
+                                        model.value === options.model.value
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                    <div className="relative h-6 w-6">
+                                      <NextImage
+                                        src={`/decorations/${model.value}.png`}
+                                        fill
+                                        alt={model.label}
+                                        className="object-contain"
+                                      />
+                                    </div>
+                                    <span className="text-sm">
+                                      {model.label}
+                                    </span>
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        )}
+
                         {option.value === "botanical" && isSelected && (
-                          <div className="grid grid-cols-3 gap-2 mt-2">
+                          <div
+                            className="grid grid-cols-3 gap-2 mt-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {botanicalOption?.variants?.map((variant: any) => (
                               <button
                                 key={variant.id}
+                                type="button"
                                 onClick={() =>
                                   setSelectedBotanicalIndex(variant.id)
                                 }
@@ -407,7 +420,7 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
                                   "py-2 rounded-lg text-xs font-black border-2 transition-all",
                                   selectedBotanicalIndex === variant.id
                                     ? "bg-zinc-900 text-white border-zinc-900"
-                                    : "bg-white border-zinc-100",
+                                    : "bg-white border-zinc-100 text-zinc-500 hover:border-zinc-300",
                                 )}
                               >
                                 {variant.name}
@@ -421,14 +434,26 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
                 </div>
               </div>
             </div>
-          </div>
-        </ScrollArea>
+          </ScrollArea>
+        </div>
 
-        <div className="w-full px-8 py-6 bg-white border-t">
+        <div className="w-full px-8 py-6 bg-white/80 backdrop-blur-sm border-t border-primary/10 flex justify-between items-center gap-4 shrink-0">
+          <Button
+            variant="ghost"
+            size="lg"
+            className="flex-1 cursor-pointer"
+            onClick={() => router.back()}
+          >
+            <ChevronLeft className="w-4 h-4" />
+            返回
+          </Button>
+
           <Button
             disabled={isPending}
             size="lg"
-            className="w-full h-14 rounded-2xl text-lg font-bold bg-zinc-900 text-white active:scale-95 transition-all cursor-pointer"
+            className="flex-1 group cursor-pointer"
+    isLoading={isPending}
+    loadingText="處理中..."
             onClick={() =>
               saveConfig({
                 configId,
@@ -438,12 +463,26 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
                 occasion: options.model.value,
                 decoration: Object.entries(selectedDecorations)
                   .filter(([_, selected]) => selected)
-                  .map(([key]) => key),
+                  .map(([key, _]) => {
+                    if (key === "botanical") {
+                      return `botanical-${selectedBotanicalIndex}`;
+                    }
+                    return key;
+                  }),
               })
             }
           >
-            {isPending ? "處理中..." : "下一步"}{" "}
-            <ArrowRight className="h-5 w-5 ml-2 r" />
+            {isPending ? (
+              <span className="flex items-center gap-2 ">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white " />
+                處理中...
+              </span>
+            ) : (
+              <>
+                下一步
+                <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform " />
+              </>
+            )}
           </Button>
         </div>
       </div>

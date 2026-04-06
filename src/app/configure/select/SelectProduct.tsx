@@ -3,6 +3,7 @@
 import { BOX_SETS } from "@/validators/option-validators";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-botton";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -12,6 +13,7 @@ import {
   Globe,
   Heart,
   ArrowUpDown,
+  ChevronLeft,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 
@@ -43,16 +45,18 @@ const SelectProduct = ({ configId }: SelectProductProps) => {
             100% Vegan & Cruelty-Free
           </span>
         </div>
-        <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+        <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-5xl">
           挑選您的純素禮贈方案
         </h1>
-        <p className="mt-4 text-lg text-primary/60 max-w-2xl mx-auto">
+        <p className="mt-4 text-m text-primary/60 max-w-2xl mx-auto">
           從在地蔬果到職人手作，每一份選品都堅持純素、零殘忍與永續環保。
           <br />
           為您的重要時刻傳遞最誠摯的心意。
         </p>
       </div>
-
+<div className="mb-6">
+  <BackButton/> 
+</div>
       <div className="flex items-center gap-2 mb-2">
         <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
           Step 1
@@ -130,7 +134,8 @@ const SelectProduct = ({ configId }: SelectProductProps) => {
               </div>
 
               <Button
-                className="mt-8 w-full py-6 rounded-xl text-md font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
+              size="lg"
+                className="mt-8 w-full cursor-pointer"
                 onClick={() => {
                   const query = new URLSearchParams();
                   if (configId) query.set("id", configId);

@@ -3,148 +3,144 @@
 import { useQuery } from '@tanstack/react-query'
 import { getPaymentStatus } from './actions'
 import { useSearchParams } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
-import PhonePreview from '@/components/PhonePreview'
-import { formatPrice } from '@/lib/utils'
+import { Loader2, CheckCircle2, Copy, Leaf, ShoppingBag, Sparkles } from 'lucide-react'
+import { OrderSummary } from '@/components/OrderSummary'
+import { toast } from 'sonner'
+import { Suspense } from 'react'
+import { BoxPreview } from '@/components/ui/BoxPreview'
+import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
-const ThankYou = () => {
+const ThankYouContent = () => {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('orderId') || ''
 
   const { data } = useQuery({
-    queryKey: ['get-payment-status'],
+    queryKey: ['get-payment-status', orderId],
     queryFn: async () => await getPaymentStatus({ orderId }),
     retry: true,
     retryDelay: 500,
+    enabled: !!orderId,
   })
 
-  if (data === undefined) {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(orderId)
+    toast.success("訂單編號已複製")
+  }
+
+  if (data === undefined || data === false) {
     return (
-      <div className='w-full mt-24 flex justify-center'>
-        <div className='flex flex-col items-center gap-2'>
-          <Loader2 className='h-8 w-8 animate-spin text-zinc-500' />
-          <h3 className='font-semibold text-xl'>Loading your order...</h3>
-          <p>This won't take long.</p>
+      <div className='w-full mt-24 flex justify-center bg-background min-h-screen'>
+        <div className='flex flex-col items-center gap-4'>
+          <Loader2 className='h-10 w-10 animate-spin text-primary' />
+          <h3 className='font-black text-xl tracking-tight text-foreground'>
+            {data === undefined ? "正在準備您的專屬禮盒細節..." : "正在確認付款狀態..."}
+          </h3>
         </div>
       </div>
     )
   }
 
-  if (data === false) {
-    return (
-      <div className='w-full mt-24 flex justify-center'>
-        <div className='flex flex-col items-center gap-2'>
-          <Loader2 className='h-8 w-8 animate-spin text-zinc-500' />
-          <h3 className='font-semibold text-xl'>Verifying your payment...</h3>
-          <p>This might take a moment.</p>
-        </div>
-      </div>
-    )
-  }
-
-  const { configuration, billingAddress, shippingAddress, amount } = data
-  const { color } = configuration
+  const { amount, user, invoiceType, invoiceValue, companyTitle, shippingAddress, configuration } = data
 
   return (
-    <div className='bg-white'>
-      <div className='mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8'>
-        <div className='max-w-xl'>
-          <p className='text-base font-medium text-primary'>Thank you!</p>
-          <h1 className='mt-2 text-4xl font-bold tracking-tight sm:text-5xl'>
-            Your case is on the way!
+    <div className='bg-background min-h-screen py-10 sm:py-20'>
+      <div className='mx-auto max-w-4xl px-6 lg:px-8'>
+        <div className='flex flex-col items-center text-center mb-16'>
+          <div className='bg-primary text-primary-foreground p-5 rounded-full mb-8 shadow-lg shadow-primary/20'>
+            <CheckCircle2 className='h-12 w-12' />
+          </div>
+          <span className='bg-primary/10 text-primary text-[12px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-6'>
+            Order Successful 訂單成功
+          </span>
+          <h1 className='text-4xl font-black tracking-tighter text-foreground sm:text-6xl'>
+            Vegan Festbox <br /> <span className="text-primary">準備中</span>
           </h1>
-          <p className='mt-2 text-base text-zinc-500'>
-            We've received your order and are now processing it.
+          
+          <div className='mt-10 flex items-center gap-3 bg-card px-6 py-3 rounded-2xl border border-border shadow-sm'>
+            <span className='text-sm font-bold text-muted-foreground'>訂單編號</span>
+            <code className='text-base font-black text-primary'>
+              #{orderId.slice(0, 8).toUpperCase()}
+            </code>
+            <button 
+              onClick={copyToClipboard}
+              className='ml-2 p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors'
+            >
+              <Copy className='h-4 w-4' />
+            </button>
+          </div>
+        </div>
+
+        <div className='mb-12 flex justify-center'>
+          <div className='relative w-full aspect-[16/9] md:aspect-[21/9] bg-white/10 rounded-[3rem] shadow-xl border border-border overflow-hidden flex items-center justify-center p-8 group'>
+            <div className='absolute inset-0 opacity-5 bg-[url("/paper-texture.jpg")]' />
+            <BoxPreview 
+              color={configuration?.color}
+              finish={configuration?.finish}
+              occasion={configuration?.occasion}
+              decoration={configuration?.decoration ?? []}
+              className="h-full aspect-square w-auto transform group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className='absolute top-6 right-8 flex items-center gap-2 bg-white/70 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-sm z-10'>
+              <Sparkles className='w-4 h-4 text-primary' />
+              <span className='text-[10px] font-black text-foreground uppercase tracking-[0.2em]'>Your Design</span>
+            </div>
+          </div>
+        </div>
+
+        <div className='bg-card rounded-[3rem] shadow-sm border border-border overflow-hidden'>
+          <div className='p-8 lg:p-12'>
+            <div className='flex items-center justify-between mb-10'>
+              <div className='flex items-center gap-3'>
+                <ShoppingBag className='w-6 h-6 text-primary' />
+                <h2 className='text-2xl font-black text-foreground tracking-tight'>訂單細節總覽</h2>
+              </div>
+              <div className='hidden md:flex items-center gap-2 bg-primary/10 px-4 py-1.5 rounded-full'>
+                <span className='text-[10px] font-black text-primary uppercase tracking-widest'>Paid 已支付</span>
+                <CheckCircle2 className='w-4 h-4 text-primary' />
+              </div>
+            </div>
+            <OrderSummary order={data} />
+
+          </div>
+        </div>
+
+        <div className='mt-8 bg-primary text-primary-foreground rounded-[2.5rem] p-8 shadow-xl flex items-center gap-6'>
+          <div className='bg-white/20 p-4 rounded-2xl shrink-0'>
+            <Leaf className='w-6 h-6 text-white' />
+          </div>
+          <p className='text-sm leading-relaxed font-medium'>
+            <span className='font-black block text-base mb-1 uppercase tracking-wider'>您的選擇，正在改變世界</span>
+            感謝您的支持與購買。 <br />堅持使用 100% 植物性材料與環保包裝，是我們對永續生活的承諾。
           </p>
-
-          <div className='mt-12 text-sm font-medium'>
-            <p className='text-zinc-900'>Order number</p>
-            <p className='mt-2 text-zinc-500'>{orderId}</p>
-          </div>
         </div>
 
-        <div className='mt-10 border-t border-zinc-200'>
-          <div className='mt-10 flex flex-auto flex-col'>
-            <h4 className='font-semibold text-zinc-900'>
-              You made a great choice!
-            </h4>
-            <p className='mt-2 text-sm text-zinc-600'>
-              We at CaseCobra believe that a phone case doesn't only need to
-              look good, but also last you for the years to come. We offer a
-              5-year print guarantee: If you case isn't of the highest quality,
-              we'll replace it for free.
-            </p>
-          </div>
-        </div>
-
-        <div className='flex space-x-6 overflow-hidden mt-4 rounded-xl bg-gray-900/5 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl'>
-          <PhonePreview
-            croppedImageUrl={configuration.croppedImageUrl!}
-            color={color!}
-          />
-        </div>
-
-        <div>
-          <div className='grid grid-cols-2 gap-x-6 py-10 text-sm'>
-            <div>
-              <p className='font-medium text-gray-900'>Shipping address</p>
-              <div className='mt-2 text-zinc-700'>
-                <address className='not-italic'>
-                  <span className='block'>{shippingAddress?.name}</span>
-                  <span className='block'>{shippingAddress?.street1}</span>
-                  {shippingAddress?.street2 && <span className='block'>{shippingAddress?.street2}</span>}
-                  <span className='block'>
-                    {shippingAddress?.postalCode} {shippingAddress?.city}
-                  </span>
-                </address>
-              </div>
-            </div>
-            <div>
-              <p className='font-medium text-gray-900'>Billing address</p>
-              <div className='mt-2 text-zinc-700'>
-                <address className='not-italic'>
-                  <span className='block'>{billingAddress?.name}</span>
-                  <span className='block'>{billingAddress?.street1}</span>
-                  {shippingAddress?.street2 && <span className='block'>{shippingAddress?.street2}</span>}
-                  <span className='block'>
-                    {billingAddress?.postalCode} {billingAddress?.city}
-                  </span>
-                </address>
-              </div>
-            </div>
-          </div>
-
-          <div className='grid grid-cols-2 gap-x-6 border-t border-zinc-200 py-10 text-sm'>
-            <div>
-              <p className='font-medium text-zinc-900'>Payment status</p>
-              <p className='mt-2 text-zinc-700'>Paid</p>
-            </div>
-
-            <div>
-              <p className='font-medium text-zinc-900'>Shipping Method</p>
-              <p className='mt-2 text-zinc-700'>
-                DHL, takes up to 3 working days
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className='space-y-6 border-t border-zinc-200 pt-10 text-sm'>
-          <div className='flex justify-between'>
-            <p className='font-medium text-zinc-900'>Subtotal</p>
-            <p className='text-zinc-700'>{formatPrice(amount)}</p>
-          </div>
-          <div className='flex justify-between'>
-            <p className='font-medium text-zinc-900'>Shipping</p>
-            <p className='text-zinc-700'>{formatPrice(0)}</p>
-          </div>
-          <div className='flex justify-between'>
-            <p className='font-medium text-zinc-900'>Total</p>
-            <p className='text-zinc-700'>{formatPrice(amount)}</p>
-          </div>
+        <div className='mt-12 flex flex-col items-center'>
+          <Link
+            href="/"
+            className={buttonVariants({
+              variant: "default",
+              size: "lg",
+              className: "w-full max-w-sm h-16 text-base rounded-2xl font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" 
+            })}
+          >
+            回到首頁
+          </Link>
         </div>
       </div>
     </div>
+  )
+}
+
+const ThankYou = () => {
+  return (
+    <Suspense fallback={
+      <div className='w-full mt-24 flex justify-center bg-background min-h-screen'>
+        <Loader2 className='h-10 w-10 animate-spin text-primary' />
+      </div>
+    }>
+      <ThankYouContent />
+    </Suspense>
   )
 }
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { buttonVariants } from "./ui/button";
 import MaxWidthWrapper from "./MaxWidthWrapper";
@@ -49,8 +49,8 @@ const Navbar = async () => {
                     className: "hidden sm:flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-all",
                   })}
                 >
-                  客製專屬禮盒
-                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                  立即開始訂製
+                  <ChevronRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </>
             ) : (
@@ -87,7 +87,7 @@ const Navbar = async () => {
                   })}
                 >
                   開始客製
-                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                  <ChevronRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </>
             )}
