@@ -13,7 +13,6 @@ import {
   Globe,
   Heart,
   ArrowUpDown,
-  ChevronLeft,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 

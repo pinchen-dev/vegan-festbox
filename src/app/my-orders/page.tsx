@@ -2,7 +2,7 @@ import { db } from '@/db'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { redirect } from 'next/navigation'
 import { ShoppingBag, Eye } from 'lucide-react'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, cn } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -12,6 +12,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { OrderDetailsDialog } from '@/components/OrderDetailsDialog'
+import { buttonVariants } from '@/components/ui/button'
+import Link from 'next/link'
 
 const Page = async () => {
   const { getUser } = getKindeServerSession()
@@ -39,7 +41,14 @@ const Page = async () => {
   return (
     <div className='flex min-h-screen w-full bg-background font-sans text-foreground'>
       <div className='max-w-5xl w-full mx-auto flex flex-col gap-10 py-12 px-4 sm:px-6 lg:px-8'>
-        
+      <div className='flex items-center justify-start'>
+  <Link 
+    href='/' 
+    className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), "-ml-2 text-muted-foreground hover:text-primary font-bold")}
+  >
+    返回首頁
+  </Link>
+</div>
         <div>
           <h1 className='text-4xl font-black tracking-tighter text-foreground'>
             My Orders <span className='text-primary block sm:inline sm:ml-2'>我的訂單</span>

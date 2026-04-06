@@ -36,9 +36,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import LoginModal from "@/components/LoginModal";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter();
+  const { user } = useKindeBrowserClient();
   const {
     id: orderId,
     decoration,
@@ -49,7 +52,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   } = configuration;
   const [showCustomCard, setShowCustomCard] = useState(!!imageUrl);
   const [isPending, setIsPending] = useState<boolean>(false);
-
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
     phoneNumber: "",
@@ -113,6 +116,10 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const colorLabel = colorOption?.label || configuration.color;
 
   const handleCheckout = async () => {
+    if (!user) {
+    setIsLoginModalOpen(true);
+    return;
+  }
     setIsPending(true);
     try {
       await createCheckoutSession({
@@ -156,6 +163,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
               確認與結帳
             </h2>
           </div>
+          <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
