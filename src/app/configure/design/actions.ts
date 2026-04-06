@@ -16,6 +16,7 @@ export type SaveConfigArgs = {
   occasion: Occasion
   decoration: string[]
   configId: string
+  hasCard: boolean
 }
 
 export async function saveConfig({
@@ -25,6 +26,7 @@ export async function saveConfig({
   occasion,
   decoration,
   configId,
+  hasCard,
 }: SaveConfigArgs) {
   if (!configId) {
     throw new Error("找不到設定 ID")
@@ -38,6 +40,7 @@ export async function saveConfig({
       boxSet,
       occasion,
       decoration,
+      croppedImageUrl: hasCard ? undefined : null,
     },
   })
 

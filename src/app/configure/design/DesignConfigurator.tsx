@@ -55,7 +55,7 @@ interface DesignConfiguratorProps {
   imageDimensions: { width: number; height: number };
 }
 
-const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
+const DesignConfigurator = ({ configId, imageUrl,imageDimensions }: DesignConfiguratorProps) => {
   const router = useRouter();
   const [selectedBotanicalIndex, setSelectedBotanicalIndex] =
     useState<number>(1);
@@ -79,6 +79,8 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
     onSuccess: () => router.push(`/configure/preview?id=${configId}`),
     onError: (error) => console.error("儲存失敗:", error),
   });
+
+  const [isSmallCardVisible, setIsSmallCardVisible] = useState<boolean>(!!imageUrl);
 
   const botanicalOption = DECORATIONS.options.find(
     (opt) => opt.value === "botanical",
@@ -461,6 +463,7 @@ const DesignConfigurator = ({ configId }: DesignConfiguratorProps) => {
                 finish: options.finish.value,
                 boxSet: options.boxSet.value,
                 occasion: options.model.value,
+                hasCard: !!imageUrl,
                 decoration: Object.entries(selectedDecorations)
                   .filter(([_, selected]) => selected)
                   .map(([key, _]) => {

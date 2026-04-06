@@ -2,7 +2,7 @@
 
 import { useUploadThing } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
-import { ImageIcon, Loader2, RefreshCw, RotateCcw, ChevronLeft } from "lucide-react";
+import { ImageIcon, Loader2, RefreshCw, RotateCcw} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition, useRef } from "react";
 import Dropzone from "react-dropzone";
@@ -30,12 +30,16 @@ const UploadCard = () => {
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: ([data]) => {
-      const configId = data.serverData.configId;
+     const configId = data.serverData.configId;
       startTransition(() => {
-        router.push(`/configure/design?id=${configId}&set=${selectedSet}`);
+        router.push(`/configure/design?id=${configId}`);
       });
     },
-  });
+    onUploadError: (error: Error) => {
+    console.error("上傳發生錯誤:", error.message);
+    alert("上傳失敗，請稍後再試");
+  },
+});
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
@@ -97,13 +101,15 @@ const UploadCard = () => {
   const handleFinalUpload = async () => {
     if (!croppedImageUrl) return;
     try {
-      const response = await fetch(croppedImageUrl);
-      const blob = await response.blob();
-      const file = new File([blob], "cropped-card.jpg", { type: "image/jpeg" });
-      await startUpload([file], { configId: undefined });
-    } catch (e) {
-      console.error(e);
-    }
+    const id = searchParams.get("id"); 
+    const response = await fetch(croppedImageUrl);
+    const blob = await response.blob();
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    
+    await startUpload([file], { configId: id?? undefined }); 
+  } catch (e) {
+    console.error(e);
+  }
   };
 
   return (

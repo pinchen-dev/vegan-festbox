@@ -119,17 +119,18 @@ export const getConfigurationSpecs = (config: any): ConfigSpec[] => {
       }
     });
   }
-  if (config.croppedImageUrl) {
+ const hasCard = config.hasCustomCard && config.croppedImageUrl;
+
+if (hasCard) {
     specs.push({
       label: "客製小卡",
       value: "附上客製小卡"
     });
-  } else {
+} else {
     specs.push({
       label: "客製小卡",
       value: "無需客製小卡"
     });
-  }
-
+}
   return specs;
 };

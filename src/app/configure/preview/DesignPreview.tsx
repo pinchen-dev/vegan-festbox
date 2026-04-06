@@ -122,25 +122,26 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   }
     setIsPending(true);
     try {
-      await createCheckoutSession({
-        configId: orderId,
-        shippingInfo: shippingInfo,
-        invoiceInfo: {
-          ...invoiceInfo,
-          type:
-            invoiceInfo.type === "PAPER"
-              ? "ELECTRONIC"
-              : (invoiceInfo.type as "ELECTRONIC" | "COMPANY"),
-        },
-      }).then(({ url }) => {
-        if (url) window.location.href = url;
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsPending(false);
+    const { url } = await createCheckoutSession({
+      configId: orderId,
+      shippingInfo: shippingInfo,
+      invoiceInfo: {
+        ...invoiceInfo,
+        type: invoiceInfo.type === "PAPER" 
+          ? "ELECTRONIC" 
+          : (invoiceInfo.type as "ELECTRONIC" | "COMPANY"),
+      },
+    });
+
+    if (url) {
+      window.location.href = url;
     }
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setIsPending(false);
+  }
+};
 
   const isFormValid =
     shippingInfo.name.trim() !== "" &&
