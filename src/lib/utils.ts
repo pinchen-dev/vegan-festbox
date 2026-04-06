@@ -102,6 +102,7 @@ export const getConfigurationSpecs = (config: any): ConfigSpec[] => {
     }
   ];
 
+
   const decorationOrder = ['wax_seal', 'twine', 'botanical'];
 
   if (config.decoration && Array.isArray(config.decoration)) {
@@ -116,6 +117,17 @@ export const getConfigurationSpecs = (config: any): ConfigSpec[] => {
           console.error(e);
         }
       }
+    });
+  }
+  if (config.croppedImageUrl) {
+    specs.push({
+      label: "客製小卡",
+      value: "附上客製小卡"
+    });
+  } else {
+    specs.push({
+      label: "客製小卡",
+      value: "無需客製小卡"
     });
   }
 

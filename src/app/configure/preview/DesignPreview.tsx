@@ -82,25 +82,32 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   }
 
   const decorationArray = configuration.decoration || [];
-const botanicalEntry = decorationArray.find((d) => d.startsWith("botanical-"));
-const flowerId = botanicalEntry ? Number(botanicalEntry.split("-")[1]) : null;
+  const botanicalEntry = decorationArray.find((d) =>
+    d.startsWith("botanical-"),
+  );
+  const flowerId = botanicalEntry ? Number(botanicalEntry.split("-")[1]) : null;
 
-const modelValue = configuration.occasion; 
-const waxSealOption = DECORATIONS.options.find((opt) => opt.value === "wax_seal");
+  const modelValue = configuration.occasion;
+  const waxSealOption = DECORATIONS.options.find(
+    (opt) => opt.value === "wax_seal",
+  );
 
-const SECTION_CLASS = "bg-white/80 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-zinc-200 shadow-sm transition-all";
+  const SECTION_CLASS =
+    "bg-white/80 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-zinc-200 shadow-sm transition-all";
 
-if (modelValue && waxSealOption) {
-  totalPrice += waxSealOption.price;
-}
+  if (modelValue && waxSealOption) {
+    totalPrice += waxSealOption.price;
+  }
 
-const currentDecoration = DECORATIONS.options.filter((opt) => 
-  decorationArray.some((d) => d.startsWith(opt.value)) && opt.value !== "wax_seal"
-);
+  const currentDecoration = DECORATIONS.options.filter(
+    (opt) =>
+      decorationArray.some((d) => d.startsWith(opt.value)) &&
+      opt.value !== "wax_seal",
+  );
 
-currentDecoration.forEach((item) => {
-  totalPrice += item.price;
-});
+  currentDecoration.forEach((item) => {
+    totalPrice += item.price;
+  });
 
   const colorOption = COLORS.find((c) => c.value === configuration.color);
   const colorLabel = colorOption?.label || configuration.color;
@@ -135,25 +142,20 @@ currentDecoration.forEach((item) => {
     shippingInfo.district !== "" &&
     shippingInfo.address.trim() !== "";
 
-    
-
   return (
-  <div className="flex flex-col items-center py-10 sm:py-20 bg-background min-h-screen text-foreground">
-    <div className="max-w-6xl w-full px-6 lg:px-8">
-      <div className="flex flex-col mb-8 gap-6">
-        <BackButton className="w-fit">
-          返回修改配置
-        </BackButton>
+    <div className="flex flex-col items-center py-10 sm:py-20 bg-background min-h-screen text-foreground">
+      <div className="max-w-6xl w-full px-6 lg:px-8">
+        <div className="flex flex-col mb-8 gap-6">
+          <BackButton className="w-fit">返回修改配置</BackButton>
 
           <div className="flex items-center gap-2 mb-2">
-        
-        <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
-          Step 4
-        </span>
-        <h2 className="tracking-tight font-black text-3xl text-zinc-900">
-          確認與結帳
-        </h2>
-      </div>
+            <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
+              Step 4
+            </span>
+            <h2 className="tracking-tight font-black text-3xl text-zinc-900">
+              確認與結帳
+            </h2>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -384,25 +386,26 @@ currentDecoration.forEach((item) => {
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white/70 rounded-2xl p-8 border border-zinc-200 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
-              
-<div className="relative w-full aspect-square bg-white/10 rounded-[2rem] border border-zinc-100 mb-8 flex items-center justify-center overflow-hidden group">
-              <div className="absolute inset-0 opacity-10 bg-[url('/paper-texture.jpg')] mix-blend-multiply" />
-              <BoxPreview 
-                color={configuration.color}
-                finish={configuration.finish}
-                occasion={configuration.occasion}
-                decoration={configuration.decoration ?? []}
-                className="h-4/5 w-auto transform transition-transform duration-500 group-hover:scale-110"
-              />
-             <div className='absolute top-6 right-8 flex items-center gap-2 bg-white/70 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-sm z-10'>
-              <Sparkles className='w-4 h-4 text-primary' />
-              <span className='text-[10px] font-black text-foreground uppercase tracking-[0.2em]'>Your Design</span>
-            </div>
-          </div>
-
-            <h3 className="text-2xl font-black mb-6 tracking-tighter">訂單摘要</h3>
-
-            <div className="space-y-5 mb-10">
+              <div className="relative w-full aspect-square bg-white/10 rounded-[2rem] border border-zinc-100 mb-8 flex items-center justify-center overflow-hidden group">
+                <div className="absolute inset-0 opacity-10 bg-[url('/paper-texture.jpg')] mix-blend-multiply" />
+                <BoxPreview
+                  color={configuration.color}
+                  finish={configuration.finish}
+                  occasion={configuration.occasion}
+                  decoration={configuration.decoration ?? []}
+                  className="h-4/5 w-auto transform transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute top-6 right-8 flex items-center gap-2 bg-white/70 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-sm z-10">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">
+                    Your Design
+                  </span>
+                </div>
+              </div>
+              <h3 className="text-2xl font-black mb-6 tracking-tighter">
+                訂單摘要
+              </h3>
+              <div className="space-y-5 mb-10">
                 <SummaryRow
                   label="商品款式"
                   value={currentBoxSet?.label}
@@ -423,84 +426,92 @@ currentDecoration.forEach((item) => {
                   />
                 )}
                 {modelValue && (
-    <SummaryRow
-      label="專屬蠟封"
-      price={waxSealOption?.price}
-      value={MODELS.options.find((opt) => opt.value === modelValue)?.label}
-      icon={Sparkles}
-    />
-  )}
+                  <SummaryRow
+                    label="專屬蠟封"
+                    price={waxSealOption?.price}
+                    value={
+                      MODELS.options.find((opt) => opt.value === modelValue)
+                        ?.label
+                    }
+                    icon={Sparkles}
+                  />
+                )}
 
-  {currentDecoration.map((d) => {
-    const isBotanical = d.value === "botanical";
-    
-   const flowerName = isBotanical
-  ? d.variants?.find((v) => v.id == flowerId)?.name || "未知款式"
-  : null;
-    return (
-    <SummaryRow
-      key={d.value}
-      label="裝飾物"
-      value={isBotanical 
-        ? `${d.label} (${flowerName || `找不到ID:${flowerId}`})` 
-        : d.label
-      }
-      price={d.price}
-      icon={Heart}
-    />
-  );
-})}
-</div>
+                {currentDecoration.map((d) => {
+                  const isBotanical = d.value === "botanical";
 
-{imageUrl && (
-  <div className="border-t border-zinc-100 pt-6 mb-10 space-y-4">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <ImageIcon className="w-5 h-5 text-primary" />
-        <span className="text-base font-black">附贈客製小卡</span>
-      </div>
-      <Switch
-        checked={showCustomCard}
-        onCheckedChange={setShowCustomCard}
-      />
-    </div>
+                  const flowerName = isBotanical
+                    ? d.variants?.find((v) => v.id == flowerId)?.name ||
+                      "未知款式"
+                    : null;
+                  return (
+                    <SummaryRow
+                      key={d.value}
+                      label="裝飾物"
+                      value={
+                        isBotanical
+                          ? `${d.label} (${flowerName || `找不到ID:${flowerId}`})`
+                          : d.label
+                      }
+                      price={d.price}
+                      icon={Heart}
+                    />
+                  );
+                })}
+              </div>
+              {imageUrl && (
+                <div className="border-t border-zinc-100 pt-6 mb-10 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="w-5 h-5 text-primary" />
+                      <span className="text-base font-black">附贈客製小卡</span>
+                    </div>
+                    <Switch
+                      checked={showCustomCard}
+                      onCheckedChange={setShowCustomCard}
+                    />
+                  </div>
 
-    {showCustomCard && (
-      <div className="flex flex-col items-center py-10 bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200">
-        <div className="relative w-80 h-[450px] bg-[#fdfcfb] rounded-sm p-6 shadow-xl border border-zinc-100 flex flex-col overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-40 pointer-events-none"
-            style={{ backgroundImage: `url("/paper-texture.jpg")`, backgroundSize: 'cover' }}
-          />
-          
-          <div className="relative w-fit max-w-full mx-auto max-h-[250px] bg-white p-2 shadow-sm border border-zinc-400 rotate-1 mb-8 z-10 flex items-center justify-center overflow-hidden">
-            <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
-              <img
-                src={imageUrl}
-                alt="Card Preview"
-                className="max-w-full max-h-full w-auto h-auto object-contain"
-              />
-            </div>
-          </div>
+                  {showCustomCard && (
+                    <div className="flex flex-col items-center py-10 bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200">
+                      <div className="relative w-80 h-[450px] bg-[#fdfcfb] rounded-sm p-6 shadow-xl border border-zinc-100 flex flex-col overflow-hidden">
+                        <div
+                          className="absolute inset-0 opacity-40 pointer-events-none"
+                          style={{
+                            backgroundImage: `url("/paper-texture.jpg")`,
+                            backgroundSize: "cover",
+                          }}
+                        />
 
-          <div className="w-full flex-1 border-t border-dashed border-zinc-300 pt-20 flex flex-col justify-between relative z-10">
-            <div className="space-y-4">
-              <div className="h-[1px] bg-zinc-100 w-full" />
-              <div className="h-[1px] bg-zinc-100 w-full" />
-              <div className="h-[1px] bg-zinc-100 w-3/4" />
-            </div>
-            
-            <div className="pb-2 mt-4">
-              <p className="text-[7px] text-zinc-300 text-right mt-1">
-                Vegan Festbox Eco-friendly Paper
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-  </div>
-)}              <div className="flex justify-between items-end mb-10">
+                        <div className="relative w-fit max-w-full mx-auto max-h-[250px] bg-white p-2 shadow-sm border border-zinc-400 rotate-1 mb-8 z-10 flex items-center justify-center overflow-hidden">
+                          <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
+                            <img
+                              src={imageUrl}
+                              alt="Card Preview"
+                              className="max-w-full max-h-full w-auto h-auto object-contain"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="w-full flex-1 border-t border-dashed border-zinc-300 pt-20 flex flex-col justify-between relative z-10">
+                          <div className="space-y-4">
+                            <div className="h-[1px] bg-zinc-100 w-full" />
+                            <div className="h-[1px] bg-zinc-100 w-full" />
+                            <div className="h-[1px] bg-zinc-100 w-3/4" />
+                          </div>
+
+                          <div className="pb-2 mt-4">
+                            <p className="text-[7px] text-zinc-300 text-right mt-1">
+                              Vegan Festbox Eco-friendly Paper
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}{" "}
+              <div className="flex justify-between items-end mb-10">
                 <span className="font-bold text-zinc-500 text-lg">
                   總計金額
                 </span>
@@ -508,20 +519,19 @@ currentDecoration.forEach((item) => {
                   ${totalPrice}
                 </span>
               </div>
-
               <Button
-  onClick={handleCheckout}
-  disabled={isPending || !isFormValid}
-  isLoading={isPending}
-  loadingText="訂單處理中..."
-  size="lg"
-  className="w-full group"
->
-  {isFormValid ? "前往付款" : "請填妥收件資訊"}
-  {!isPending && isFormValid && (
-    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-  )}
-</Button>
+                onClick={handleCheckout}
+                disabled={isPending || !isFormValid}
+                isLoading={isPending}
+                loadingText="訂單處理中..."
+                size="lg"
+                className="w-full group"
+              >
+                {isFormValid ? "前往付款" : "請填妥收件資訊"}
+                {!isPending && isFormValid && (
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                )}
+              </Button>
             </div>
           </div>
         </div>
@@ -553,14 +563,16 @@ const SummaryRow = ({
             className="object-cover w-full h-full rounded-sm"
           />
         ) : (
-          Icon && (
-            <Icon className="w-4.5 h-4.5 text-primary" />
-          )
+          Icon && <Icon className="w-4.5 h-4.5 text-primary" />
         )}
       </div>
       <div className="flex flex-col">
-      <span className="text-[11px] text-mu font-bold uppercase tracking-wider leading-none mb-1">{label}</span>
-        <span className="text-base font-bold text-primary/80">{value || "標準"}</span>
+        <span className="text-[11px] text-mu font-bold uppercase tracking-wider leading-none mb-1">
+          {label}
+        </span>
+        <span className="text-base font-bold text-primary/80">
+          {value || "標準"}
+        </span>
       </div>
     </div>
     {price !== undefined && (

@@ -30,18 +30,30 @@ const Navbar = async () => {
                 >
                   登出
                 </Link>
-                {isAdmin ? (
+{isAdmin ? (
                   <Link
                     href="/dashboard"
                     className={buttonVariants({
                       size: "sm",
                       variant: "ghost",
-                      className: "text-stone-600 hover:text-stone-900"
+                      className: "text-stone-600 hover:text-stone-900",
                     })}
                   >
-                    管理後台 
+                    管理後台
                   </Link>
-                ) : null}
+                ) : (
+                  <Link
+                    href="/my-orders"
+                    className={buttonVariants({
+                      size: "sm",
+                      variant: "ghost",
+                      className: "text-stone-600 hover:text-stone-900",
+                    })}
+                  >
+                    我的訂單
+                  </Link>
+                )}
+
                 <Link
                   href="/configure/select"
                   className={buttonVariants({

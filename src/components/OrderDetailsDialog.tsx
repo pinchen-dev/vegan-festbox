@@ -9,8 +9,15 @@ import {
 } from "@/components/ui/dialog";
 import { OrderSummary } from "./OrderSummary";
 import { Button } from "@/components/ui/button";
+import { ReactNode } from "react";
 
-export const OrderDetailsDialog = ({ order }: { order: any }) => {
+export const OrderDetailsDialog = ({ 
+  order, 
+  children 
+}: { 
+  order: any, 
+  children?: ReactNode 
+}) => {
   if (!order?.id || !order?.configuration) return null;
 
   const displayId = String(order.id).slice(0, 8).toUpperCase();
@@ -22,7 +29,7 @@ export const OrderDetailsDialog = ({ order }: { order: any }) => {
           variant="ghost" 
           className="h-10 px-6 rounded-full text-primary font-black text-xs tracking-[0.15em] uppercase transition-all duration-300 hover:bg-primary/10 hover:text-primary active:scale-95"
         >
-          訂單詳情
+          {children || "訂單詳情"}
         </Button>
       </DialogTrigger>
 
