@@ -1,3 +1,5 @@
+"use client";
+
 import type { Dispatch, SetStateAction } from "react";
 import {
   Dialog,
@@ -9,6 +11,7 @@ import {
 import Image from "next/image";
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs";
 import { buttonVariants } from "./ui/button";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const LoginModal = ({
   isOpen,
@@ -17,9 +20,16 @@ const LoginModal = ({
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  const fullPath = searchParams.toString() 
+    ? `${pathname}?${searchParams.toString()}` 
+    : pathname;
+
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogContent className="absolute z-[9999999]">
+      <DialogContent className="fixed z-[9999999]">
         <DialogHeader>
           <div className="relative mx-auto w-24 h-24 mb-2">
             <Image
@@ -40,10 +50,16 @@ const LoginModal = ({
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-6 divide-x divide-gray-200">
-          <LoginLink className={buttonVariants({ variant: "outline" })}>
+          <LoginLink 
+            postLoginRedirectURL={fullPath} 
+            className={buttonVariants({ variant: "outline" })}
+          >
             會員登入
           </LoginLink>
-          <RegisterLink className={buttonVariants({ variant: "default" })}>
+          <RegisterLink 
+            postLoginRedirectURL={fullPath} 
+            className={buttonVariants({ variant: "default" })}
+          >
             註冊新帳號
           </RegisterLink>
         </div>

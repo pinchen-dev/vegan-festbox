@@ -59,6 +59,7 @@ model Configuration {
   finish          BoxFinish      @default(standard)
   decoration      String[]
   croppedImageUrl String?
+  hasCard          Boolean  @default(false)
   Order           Order[]
 }
 

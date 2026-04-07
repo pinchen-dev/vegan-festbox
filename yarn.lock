@@ -1280,10 +1280,10 @@
   resolved "https://registry.npmjs.org/@react-email/column/-/column-0.0.14.tgz"
   integrity sha512-f+W+Bk2AjNO77zynE33rHuQhyqVICx4RYtGX9NKsGUg0wWjdGP0qAuIkhx9Rnmk4/hFMo1fUrtYNqca9fwJdHg==
 
-"@react-email/components@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.npmjs.org/@react-email/components/-/components-1.0.10.tgz"
-  integrity sha512-r/BnqfAjr3apcvn/NDx2DqNRD5BP5wZLRdjn2IVHXjt4KmQ5RHWSCAvFiXAzRHys1BWQ2zgIc7cpWePUcAl+nw==
+"@react-email/components@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.npmjs.org/@react-email/components/-/components-1.0.11.tgz"
+  integrity sha512-s0CX31+S/u1MhBWYFAuZru0NHNExTY+OeZC9OrGyzl8PGQ0Iz/4gq3O4rHUVuA1D7FjAcPbwG1Up0yey/Xh6dw==
   dependencies:
     "@react-email/body" "0.3.0"
     "@react-email/button" "0.2.1"
@@ -1300,10 +1300,10 @@
     "@react-email/link" "0.0.13"
     "@react-email/markdown" "0.0.18"
     "@react-email/preview" "0.0.14"
-    "@react-email/render" "2.0.4"
+    "@react-email/render" "2.0.5"
     "@react-email/row" "0.0.13"
     "@react-email/section" "0.0.17"
-    "@react-email/tailwind" "2.0.6"
+    "@react-email/tailwind" "2.0.7"
     "@react-email/text" "0.1.6"
 
 "@react-email/container@>=0", "@react-email/container@0.0.16":
@@ -1358,10 +1358,10 @@
   resolved "https://registry.npmjs.org/@react-email/preview/-/preview-0.0.14.tgz"
   integrity sha512-aYK8q0IPkBXyMsbpMXgxazwHxYJxTrXrV95GFuu2HbEiIToMwSyUgb8HDFYwPqqfV03/jbwqlsXmFxsOd+VNaw==
 
-"@react-email/render@2.0.4":
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/@react-email/render/-/render-2.0.4.tgz"
-  integrity sha512-kht2oTFQ1SwrLpd882ahTvUtNa9s53CERHstiTbzhm6aR2Hbykp/mQ4tpPvsBGkKAEvKRlDEoooh60Uk6nHK1g==
+"@react-email/render@*", "@react-email/render@^2.0.5", "@react-email/render@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/@react-email/render/-/render-2.0.5.tgz"
+  integrity sha512-oAsSpY/vYt9ReDcRQDBLxENwCNAklkE6bvP5Kl9ZlmVr/RZpfhloJp8xc/OZki/YF2nisRRX50aEy8P9v3R5GA==
   dependencies:
     html-to-text "^9.0.5"
     prettier "^3.5.3"
@@ -1376,12 +1376,12 @@
   resolved "https://registry.npmjs.org/@react-email/section/-/section-0.0.17.tgz"
   integrity sha512-qNl65ye3W0Rd5udhdORzTV9ezjb+GFqQQSae03NDzXtmJq6sqVXNWNiVolAjvJNypim+zGXmv6J9TcV5aNtE/w==
 
-"@react-email/tailwind@2.0.6":
-  version "2.0.6"
-  resolved "https://registry.npmjs.org/@react-email/tailwind/-/tailwind-2.0.6.tgz"
-  integrity sha512-3PgL/GYWmgS+puLPQ2aLlsplHSOFztRl70fowBkbLIb8ZUIgvx5YId6zYCCHeM2+DQ/EG3iXXqLNTahVztuMqQ==
+"@react-email/tailwind@2.0.7":
+  version "2.0.7"
+  resolved "https://registry.npmjs.org/@react-email/tailwind/-/tailwind-2.0.7.tgz"
+  integrity sha512-kGw80weVFXikcnCXbigTGXGWQ0MRCSYNCudcdkWxebkWYd0FG6/NPoN3V1p/u68/4+NxZwYPVi2fhnp0x23HdA==
   dependencies:
-    tailwindcss "4.1.18"
+    tailwindcss "^4.1.18"
 
 "@react-email/text@>=0", "@react-email/text@0.1.6":
   version "0.1.6"
@@ -4115,7 +4115,7 @@ tailwindcss-animate@^1.0.7:
   resolved "https://registry.npmjs.org/tailwindcss-animate/-/tailwindcss-animate-1.0.7.tgz"
   integrity sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==
 
-"tailwindcss@^3.0.0 || ^4.0.0-beta.0", tailwindcss@^4, "tailwindcss@>=3.0.0 || insiders", tailwindcss@4.1.18:
+"tailwindcss@^3.0.0 || ^4.0.0-beta.0", tailwindcss@^4, tailwindcss@^4.1.18, "tailwindcss@>=3.0.0 || insiders", tailwindcss@4.1.18:
   version "4.1.18"
   resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.1.18.tgz"
   integrity sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==

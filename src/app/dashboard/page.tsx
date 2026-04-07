@@ -29,6 +29,8 @@ const Page = async (props: {
 }) => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
+  console.log("Current User Email:", user?.email)
+console.log("Admin Email from Env:", process.env.ADMIN_EMAIL)
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL
 
   if (!user || user.email !== ADMIN_EMAIL) return notFound()

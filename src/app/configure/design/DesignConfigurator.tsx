@@ -80,8 +80,6 @@ const DesignConfigurator = ({ configId, imageUrl,imageDimensions }: DesignConfig
     onError: (error) => console.error("儲存失敗:", error),
   });
 
-  const [isSmallCardVisible, setIsSmallCardVisible] = useState<boolean>(!!imageUrl);
-
   const botanicalOption = DECORATIONS.options.find(
     (opt) => opt.value === "botanical",
   );
@@ -463,7 +461,6 @@ const DesignConfigurator = ({ configId, imageUrl,imageDimensions }: DesignConfig
                 finish: options.finish.value,
                 boxSet: options.boxSet.value,
                 occasion: options.model.value,
-                hasCard: !!imageUrl,
                 decoration: Object.entries(selectedDecorations)
                   .filter(([_, selected]) => selected)
                   .map(([key, _]) => {

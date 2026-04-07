@@ -10,10 +10,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const createCheckoutSession = async ({ 
     configId, 
+    hasCard,
     shippingInfo,
     invoiceInfo 
 }: { 
     configId: string,
+    hasCard: boolean,
     shippingInfo: { 
         name: string; 
         phoneNumber: string; 
@@ -28,8 +30,9 @@ export const createCheckoutSession = async ({
         companyTitle?: string;
     }
 }) => {
-    const configuration = await db.configuration.findUnique({
+    const configuration = await db.configuration.update({
         where: { id: configId },
+        data: { hasCard: hasCard},
     });
 
     if (!configuration) {
