@@ -92,7 +92,7 @@ const Navbar = async () => {
                 <div className="h-6 w-px bg-stone-200 hidden sm:block " />
 
                 <Link
-                  href="/configure/upload"
+                  href="/configure/select"
                   className={buttonVariants({
                     size: "sm",
                     className: "hidden sm:flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-all",
