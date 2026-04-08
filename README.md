@@ -9,35 +9,33 @@
 <table>
   <tr>
     <td align="center"><b>1. 品牌首頁 (Hero)</b></td>
-    <td align="center"><b>2. 挑選方案 (Step 1)</b></td>
-  </tr>
-  <tr>
-    <td><img src="./public/screenshots/hero-demo.png" width="400"></td>
-    <td><img src="./public/screenshots/step1.png" width="400"></td>
-  </tr>
-  <tr>
+    <td align="center"><b>2. 方案挑選 (Step 1)</b></td>
     <td align="center"><b>3. 客製照片上傳 (Step 2)</b></td>
+  </tr>
+  <tr>
+    <td><img src="./public/screenshots/hero-demo.png" width="100%"></td>
+    <td><img src="./public/screenshots/step1.png" width="100%"></td>
+    <td><img src="./public/screenshots/step2_1.png" width="100%"></td>
+  </tr>
+  <tr>
     <td align="center"><b>4. 預覽小卡效果 (Step 2)</b></td>
-  </tr>
-  <tr>
-    <td><img src="./public/screenshots/step2_1.png" width="400"></td>
-    <td><img src="./public/screenshots/step2_2.png" width="400"></td>
-  </tr>
-  <tr>
     <td align="center"><b>5. 禮盒外觀配置 (Step 3)</b></td>
     <td align="center"><b>6. 確認與結帳 (Step 4)</b></td>
   </tr>
   <tr>
-    <td><img src="./public/screenshots/step3.png" width="400"></td>
-    <td><img src="./public/screenshots/step4.png" width="400"></td>
+    <td><img src="./public/screenshots/step2_2.png" width="100%"></td>
+    <td><img src="./public/screenshots/step3.png" width="100%"></td>
+    <td><img src="./public/screenshots/step4.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center"><b>7. 訂單確認 (ThankYou page)</b></td>
-    <td align="center"><b>8. 管理後台 (Admin dashboard )</b></td>
+    <td align="center"><b>7. 訂單確認 (Thank You)</b></td>
+    <td align="center"><b>✨ 使用者訂單 (My Orders)</b></td>
+    <td align="center"><b>🛡️ 管理後台 (Admin)</b></td>
   </tr>
   <tr>
-    <td><img src="./public/screenshots/step5.png" width="400"></td>
-    <td><img src="./public/screenshots/admin.png" width="400"></td>
+    <td><img src="./public/screenshots/step5.png" width="100%"></td>
+    <td><img src="./public/screenshots/my-orders.png" width="100%"></td>
+    <td><img src="./public/screenshots/admin.png" width="100%"></td>
   </tr>
 </table>
 
