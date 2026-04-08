@@ -18,7 +18,7 @@ import Link from 'next/link'
 const Page = async () => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
-
+  
   if (!user || !user.id) {
     return redirect('/')
   }
