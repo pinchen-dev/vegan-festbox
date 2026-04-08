@@ -33,7 +33,7 @@
     <td align="center"><b>🛡️ 管理後台 (Admin)</b></td>
   </tr>
   <tr>
-    <td><img src="./public/screenshots/step5.png" width="100%"></td>
+    <td><img src="./public/screenshots/thank-you.png" width="100%"></td>
     <td><img src="./public/screenshots/my-orders.png" width="100%"></td>
     <td><img src="./public/screenshots/admin.png" width="100%"></td>
   </tr>
