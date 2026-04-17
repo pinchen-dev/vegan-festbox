@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle2, Copy, Leaf, ShoppingBag, Sparkles } from 'lucide-react'
 import { OrderSummary } from '@/components/OrderSummary'
 import { toast } from 'sonner'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { BoxPreview } from '@/components/ui/BoxPreview'
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
@@ -22,6 +22,15 @@ const ThankYouContent = () => {
     retryDelay: 500,
     enabled: !!orderId,
   })
+
+  useEffect(() => {
+    if (data && typeof data === 'object') {
+      toast.success("付款成功！", {
+        description: "我們已收到您的訂單，正準備開始包裝您的 Vegan Festbox 🌿",
+        duration: 5000, 
+      })
+    }
+  }, [data])
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(orderId)
@@ -41,7 +50,7 @@ const ThankYouContent = () => {
     )
   }
 
-  const { amount, user, invoiceType, invoiceValue, companyTitle, shippingAddress, configuration } = data
+  const { configuration } = data
 
   return (
     <div className='bg-background min-h-screen py-10 sm:py-20'>

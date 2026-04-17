@@ -48,6 +48,12 @@ enum BoxFinish {
   linen
 }
 
+enum InvoiceType {
+  ELECTRONIC
+  COMPANY
+  PAPER
+}
+
 model Configuration {
   id              String         @id @default(cuid())
   width           Int?
@@ -83,7 +89,7 @@ model Order {
   shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
   shippingAddressId String?
   
-  invoiceType       String           @default("ELECTRONIC")
+  invoiceType       InvoiceType      @default(ELECTRONIC)
   invoiceValue      String?          
   companyTitle      String?          
 

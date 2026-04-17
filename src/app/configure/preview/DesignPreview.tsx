@@ -23,14 +23,15 @@ import {
   FINISHES,
   MODELS,
 } from "@/validators/option-validators";
+import { ShippingInfoSchema } from "@/validators/order-validators";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { Configuration } from "@prisma/client";
 import {
   AlertCircle,
   Box,
-  ChevronRight,
   Heart,
   Image as ImageIcon,
+  Loader2,
   Mail,
   Paintbrush,
   Palette,
@@ -39,31 +40,39 @@ import {
   Truck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { createCheckoutSession } from "./action";
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter();
   const { user } = useKindeBrowserClient();
-  const { id: orderId, decoration, boxSet, finish, imageUrl } = configuration;
+  const { id: orderId, imageUrl } = configuration;
   const [showCustomCard, setShowCustomCard] = useState(!!imageUrl);
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
- const [shippingInfo, setShippingInfo] = useState({
-  name: "",
-  phoneNumber: "",
-  postalCode: "",
-  city: "",
-  district: "",
-  address: "",
-});
+  const [shippingInfo, setShippingInfo] = useState({
+    name: "",
+    phoneNumber: "",
+    postalCode: "",
+    city: "",
+    district: "",
+    address: "",
+  });
 
-useEffect(() => {
-  const saved = localStorage.getItem("shipping-info");
-  if (saved) {
-    setShippingInfo(JSON.parse(saved));
-  }
-}, []);
+  useEffect(() => {
+    const saved = localStorage.getItem("shipping-info");
+    if (saved) {
+      setShippingInfo(JSON.parse(saved));
+    }
+
+
+    const savedInvoice = localStorage.getItem("invoice-info");
+    if (savedInvoice) {
+      setInvoiceInfo(JSON.parse(savedInvoice));
+    }
+  }, []);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -96,26 +105,35 @@ useEffect(() => {
     </div>
   );
 
- const [invoiceInfo, setInvoiceInfo] = useState({
-  type: "ELECTRONIC" as "ELECTRONIC" | "COMPANY" | "PAPER",
-  value: "",
-  companyTitle: "",
-});
+  type InvoiceType = "ELECTRONIC" | "COMPANY" | "PAPER";
 
-useEffect(() => {
-  const saved = localStorage.getItem("invoice-info");
-  if (saved) {
-    setInvoiceInfo(JSON.parse(saved));
-  }
-}, []);
-
-const handleInvoiceChange = (updates: Partial<typeof invoiceInfo>) => {
-  setInvoiceInfo((prev: typeof invoiceInfo) => {
-    const newInfo = { ...prev, ...updates };
-    localStorage.setItem("invoice-info", JSON.stringify(newInfo));
-    return newInfo;
+  const [invoiceInfo, setInvoiceInfo] = useState<{
+    type: InvoiceType;
+    value: string;
+    companyTitle: string;
+  }>({
+    type: "ELECTRONIC",
+    value: "",
+    companyTitle: "",
   });
-};
+
+  const handleInvoiceChange = (updates: Partial<typeof invoiceInfo>) => {
+    setInvoiceInfo((prev) => {
+      const newInfo = { ...prev, ...updates };
+
+      if (updates.type) {
+        if (updates.type === "PAPER") {
+          newInfo.value = "";
+          newInfo.companyTitle = "";
+        } else if (updates.type === "ELECTRONIC") {
+          newInfo.companyTitle = "";
+        }
+      }
+
+      localStorage.setItem("invoice-info", JSON.stringify(newInfo));
+      return newInfo;
+    });
+  };
 
   let totalPrice = 0;
 
@@ -169,39 +187,39 @@ const handleInvoiceChange = (updates: Partial<typeof invoiceInfo>) => {
       setIsLoginModalOpen(true);
       return;
     }
+    const validationResult = ShippingInfoSchema.safeParse({
+      ...shippingInfo,
+      invoice: invoiceInfo,
+    });
+    if (!validationResult.success) {
+      const firstIssue = validationResult.error.issues[0];
+      return toast.error(firstIssue.message);
+    }
+
     setIsPending(true);
     try {
       const { url } = await createCheckoutSession({
         configId: orderId,
         hasCard: showCustomCard,
         shippingInfo: shippingInfo,
-        invoiceInfo: {
-          ...invoiceInfo,
-          type:
-            invoiceInfo.type === "PAPER"
-              ? "ELECTRONIC"
-              : (invoiceInfo.type as "ELECTRONIC" | "COMPANY"),
-        },
+        invoiceInfo: invoiceInfo,
       });
 
       if (url) {
+        toast.success("訂單建立成功，準備跳轉至付款頁面...");
         localStorage.removeItem("shipping-info");
-      localStorage.removeItem("invoice-info");
+        localStorage.removeItem("invoice-info");
         window.location.href = url;
       }
     } catch (error) {
       console.error(error);
+      toast.error("結帳出現問題", {
+        description: "請檢查網路連線或稍後再試。",
+      });
     } finally {
       setIsPending(false);
     }
   };
-
-  const isFormValid =
-    shippingInfo.name.trim() !== "" &&
-    shippingInfo.phoneNumber.trim() !== "" &&
-    shippingInfo.city !== "" &&
-    shippingInfo.district !== "" &&
-    shippingInfo.address.trim() !== "";
 
   return (
     <div className="flex flex-col items-center py-10 sm:py-20 bg-background min-h-screen text-foreground">
@@ -224,207 +242,251 @@ const handleInvoiceChange = (updates: Partial<typeof invoiceInfo>) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-  <div className="lg:col-span-7 space-y-6">
-    <section className={SECTION_CLASS}>
-      <h3 className="text-lg font-bold mb-6 text-primary flex items-center gap-2">
-        <span className="w-1.5 h-6 bg-primary rounded-full" />
-        收件人資訊
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-primary/80">
-            收件人姓名
-          </Label>
-          <Input
-            name="name"
-            value={shippingInfo.name}
-            onChange={handleInputChange}
-            className="h-12 rounded-lg bg-white border-zinc-300 "
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-primary/80">
-            聯絡電話
-          </Label>
-          <Input
-            name="phoneNumber"
-            value={shippingInfo.phoneNumber}
-            onChange={handleInputChange}
-            className="h-12 rounded-lg bg-white border-zinc-300"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-primary/80">
-            縣市
-          </Label>
-          <Select
-            value={shippingInfo.city}
-            onValueChange={(city) => {
-              const newInfo = {
-                ...shippingInfo,
-                city,
-                district: "",
-                postalCode: "",
-              };
-              setShippingInfo(newInfo);
-              localStorage.setItem("shipping-info", JSON.stringify(newInfo));
-            }}
-          >
-            <SelectTrigger className="h-12 rounded-lg bg-white border-zinc-300">
-              <SelectValue placeholder="選擇縣市" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.keys(TAIWAN_DATA).map((city) => (
-                <SelectItem key={city} value={city}>
-                  {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-primary/80">
-            鄉鎮市區 / 郵遞區號
-          </Label>
-          <div className="flex gap-2">
-            <Select
-              disabled={!shippingInfo.city}
-              value={shippingInfo.district}
-              onValueChange={(district) => {
-                const postalCode = TAIWAN_DATA[shippingInfo.city][district];
-                const newInfo = {
-                  ...shippingInfo,
-                  district,
-                  postalCode,
-                };
-                setShippingInfo(newInfo);
-                localStorage.setItem("shipping-info", JSON.stringify(newInfo));
-              }}
-            >
-              <SelectTrigger className="h-12 rounded-lg bg-white border-zinc-300 flex-1">
-                <SelectValue placeholder="區域" />
-              </SelectTrigger>
-              <SelectContent>
-                {shippingInfo.city &&
-                  Object.keys(TAIWAN_DATA[shippingInfo.city]).map(
-                    (district) => (
-                      <SelectItem key={district} value={district}>
-                        {district}
-                      </SelectItem>
-                    ),
-                  )}
-              </SelectContent>
-            </Select>
-            <Input
-              readOnly
-              value={shippingInfo.postalCode}
-              className="h-12 rounded-lg bg-zinc-100 border-zinc-300 w-20 text-center font-black text-zinc-500"
-            />
-          </div>
-        </div>
-        <div className="space-y-2 md:col-span-2">
-          <Label className="text-sm font-bold text-primary/80">
-            詳細地址
-          </Label>
-          <Input
-            name="address"
-            value={shippingInfo.address}
-            onChange={handleInputChange}
-            className="h-12 rounded-lg bg-white border-zinc-300"
-          />
-        </div>
-      </div>
-    </section>
+          <div className="lg:col-span-7 space-y-6">
+            <section className={SECTION_CLASS}>
+              <h3 className="text-lg font-bold mb-6 text-primary flex items-center gap-2">
+                <span className="w-1.5 h-6 bg-primary rounded-full" />
+                收件人資訊
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold text-primary/80">
+                    收件人姓名
+                  </Label>
+                  <Input
+                    name="name"
+                    value={shippingInfo.name}
+                    onChange={handleInputChange}
+                    className="h-12 rounded-lg bg-white border-zinc-300 "
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold text-primary/80">
+                    聯絡電話
+                  </Label>
+                  <Input
+                    name="phoneNumber"
+                    value={shippingInfo.phoneNumber}
+                    onChange={handleInputChange}
+                    className="h-12 rounded-lg bg-white border-zinc-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold text-primary/80">
+                    縣市
+                  </Label>
+                  <Select
+                    value={shippingInfo.city}
+                    onValueChange={(city) => {
+                      const newInfo = {
+                        ...shippingInfo,
+                        city,
+                        district: "",
+                        postalCode: "",
+                      };
+                      setShippingInfo(newInfo);
+                      localStorage.setItem(
+                        "shipping-info",
+                        JSON.stringify(newInfo),
+                      );
+                    }}
+                  >
+                    <SelectTrigger className="h-12 rounded-lg bg-white border-zinc-300">
+                      <SelectValue placeholder="選擇縣市" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(TAIWAN_DATA).map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold text-primary/80">
+                    鄉鎮市區 / 郵遞區號
+                  </Label>
+                  <div className="flex gap-2">
+                    <Select
+                      disabled={!shippingInfo.city}
+                      value={shippingInfo.district}
+                      onValueChange={(district) => {
+                        const postalCode =
+                          TAIWAN_DATA[shippingInfo.city][district];
+                        const newInfo = {
+                          ...shippingInfo,
+                          district,
+                          postalCode,
+                        };
+                        setShippingInfo(newInfo);
+                        localStorage.setItem(
+                          "shipping-info",
+                          JSON.stringify(newInfo),
+                        );
+                      }}
+                    >
+                      <SelectTrigger className="h-12 rounded-lg bg-white border-zinc-300 flex-1">
+                        <SelectValue placeholder="區域" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {shippingInfo.city &&
+                          Object.keys(TAIWAN_DATA[shippingInfo.city]).map(
+                            (district) => (
+                              <SelectItem key={district} value={district}>
+                                {district}
+                              </SelectItem>
+                            ),
+                          )}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      readOnly
+                      value={shippingInfo.postalCode}
+                      className="h-12 rounded-lg bg-zinc-100 border-zinc-300 w-20 text-center font-black text-zinc-500"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="text-sm font-bold text-primary/80">
+                    詳細地址
+                  </Label>
+                  <Input
+                    name="address"
+                    value={shippingInfo.address}
+                    onChange={handleInputChange}
+                    className="h-12 rounded-lg bg-white border-zinc-300"
+                  />
+                </div>
+              </div>
+            </section>
 
-           <section className={SECTION_CLASS}>
-  <h3 className="text-lg font-bold mb-6 text-primary flex items-center gap-2">
-    <span className="w-1.5 h-6 bg-primary rounded-full" />
-    發票資訊
-  </h3>
-  <RadioGroup
-    value={invoiceInfo.type}
-    onValueChange={(val: "ELECTRONIC" | "COMPANY" | "PAPER") =>
-      handleInvoiceChange({ type: val, value: "", companyTitle: "" })
-    }
-    className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
-  >
-    <div className="flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer hover:bg-zinc-50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-      <RadioGroupItem value="ELECTRONIC" id="electronic" />
-      <Label
-        htmlFor="electronic"
-        className="cursor-pointer font-bold text-primary"
-      >
-        電子載具
-      </Label>
-    </div>
-    <div className="flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer hover:bg-zinc-50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-      <RadioGroupItem value="PAPER" id="paper" />
-      <Label
-        htmlFor="paper"
-        className="cursor-pointer font-bold text-primary"
-      >
-        個人紙本
-      </Label>
-    </div>
-    <div className="flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer hover:bg-zinc-50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-      <RadioGroupItem value="COMPANY" id="company" />
-      <Label
-        htmlFor="company"
-        className="cursor-pointer font-bold text-primary"
-      >
-        公司三聯
-      </Label>
-    </div>
-  </RadioGroup>
+            <section className={SECTION_CLASS}>
+              <h3 className="text-lg font-bold mb-6 text-primary flex items-center gap-2">
+                <span className="w-1.5 h-6 bg-primary rounded-full" />
+                發票資訊
+              </h3>
+              <RadioGroup
+                value={invoiceInfo.type}
+                onValueChange={(val: "ELECTRONIC" | "COMPANY" | "PAPER") =>
+                  handleInvoiceChange({
+                    type: val,
+                    value: "",
+                    companyTitle: "",
+                  })
+                }
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+              >
+                <div className="flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer hover:bg-zinc-50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                  <RadioGroupItem value="ELECTRONIC" id="electronic" />
+                  <Label
+                    htmlFor="electronic"
+                    className="cursor-pointer font-bold text-primary"
+                  >
+                    電子載具
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer hover:bg-zinc-50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                  <RadioGroupItem value="PAPER" id="paper" />
+                  <Label
+                    htmlFor="paper"
+                    className="cursor-pointer font-bold text-primary"
+                  >
+                    個人紙本
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer hover:bg-zinc-50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                  <RadioGroupItem value="COMPANY" id="company" />
+                  <Label
+                    htmlFor="company"
+                    className="cursor-pointer font-bold text-primary"
+                  >
+                    公司三聯
+                  </Label>
+                </div>
+              </RadioGroup>
 
-  <div className="min-h-[100px]">
-    {invoiceInfo.type === "ELECTRONIC" && (
-      <div className="space-y-2">
-        <Label className="text-sm font-bold text-primary/80">
-          載具編號
-        </Label>
-        <Input
-          placeholder="/ABC1234"
-          value={invoiceInfo.value}
-          onChange={(e) => handleInvoiceChange({ value: e.target.value })}
-          className="h-12 rounded-lg border-zinc-300 bg-white/70"
-        />
-      </div>
-    )}
-    {invoiceInfo.type === "PAPER" && (
-      <div className="flex items-center gap-3 p-4 bg-blue-50 text-blue-800 rounded-xl border border-blue-200">
-        <Mail className="w-5 h-5 text-blue-600" />
-        <p className="text-sm font-bold text-primary">
-          實體發票將隨禮盒一同寄出。
-        </p>
-      </div>
-    )}
-    {invoiceInfo.type === "COMPANY" && (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-primary/80">
-            公司抬頭
-          </Label>
-          <Input
-            value={invoiceInfo.companyTitle}
-            onChange={(e) => handleInvoiceChange({ companyTitle: e.target.value })}
-            className="h-12 rounded-lg border-zinc-300"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-bold text-primary/80">
-            統一編號
-          </Label>
-          <Input
-            value={invoiceInfo.value}
-            onChange={(e) => handleInvoiceChange({ value: e.target.value })}
-            className="h-12 rounded-lg border-zinc-300"
-          />
-        </div>
-      </div>
-    )}
-  </div>
-</section>
+              <div className="min-h-[100px]">
+                {invoiceInfo.type === "ELECTRONIC" && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold text-primary/80">
+                      載具編號
+                    </Label>
+                    <Input
+                      value={invoiceInfo.value}
+                      placeholder="例如: /ABC123D"
+                      className="h-12 rounded-lg bg-white border-zinc-300"
+                      onChange={(e) => {
+                        let rawValue = e.target.value;
+
+                        if (rawValue.trim() === "") {
+                          handleInvoiceChange({ value: "" });
+                          return;
+                        }
+
+                        let processedValue = rawValue.trim().toUpperCase();
+
+                        if (
+                          processedValue.length > 0 &&
+                          processedValue[0] !== "/"
+                        ) {
+                          processedValue = "/" + processedValue;
+                        }
+
+                        handleInvoiceChange({ value: processedValue });
+                      }}
+                    />
+                  </div>
+                )}
+                {invoiceInfo.type === "PAPER" && (
+                  <div className="flex items-center gap-3 p-4 bg-blue-50 text-blue-800 rounded-xl border border-blue-200">
+                    <Mail className="w-5 h-5 text-blue-600" />
+                    <p className="text-sm font-bold text-primary">
+                      實體發票將隨禮盒一同寄出。
+                    </p>
+                  </div>
+                )}
+                {invoiceInfo.type === "COMPANY" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold text-primary/80">
+                        公司抬頭
+                      </Label>
+                      <Input
+                        value={invoiceInfo.companyTitle}
+                        onChange={(e) =>
+                          handleInvoiceChange({ companyTitle: e.target.value })
+                        }
+                        className="h-12 rounded-lg border-zinc-300"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold text-primary/80">
+                        統一編號
+                      </Label>
+                      <Input
+                        value={invoiceInfo.value}
+                        maxLength={8}
+                        inputMode="numeric"
+                        onChange={(e) => {
+                          const onlyHalfWidthNums = e.target.value.replace(
+                            /[^0-9]/g,
+                            "",
+                          );
+
+                          handleInvoiceChange({ value: onlyHalfWidthNums });
+                        }}
+                        className="h-12 rounded-lg bg-white border-zinc-300"
+                      />
+                      <p className="text-[11px] md:text-xs text-zinc-500 leading-relaxed">
+                        *
+                        若為政府機關或無統編單位，請改選「個人紙本」發票並於抬頭欄位註明。
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
             <section className={`${SECTION_CLASS} bg-zinc-50/30 border-dashed`}>
               <h3 className="text-lg font-bold mb-6 text-primary flex items-center gap-2">
                 <span className="w-1.5 h-6 bg-primary rounded-full" />
@@ -594,15 +656,16 @@ const handleInvoiceChange = (updates: Partial<typeof invoiceInfo>) => {
               </div>
               <Button
                 onClick={handleCheckout}
-                disabled={isPending || !isFormValid}
+                disabled={isPending}
                 isLoading={isPending}
-                loadingText="訂單處理中..."
+                loadingText="訂單處理中"
                 size="lg"
                 className="w-full group"
               >
-                {isFormValid ? "前往付款" : "請填妥收件資訊"}
-                {!isPending && isFormValid && (
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "立即結帳"
                 )}
               </Button>
             </div>

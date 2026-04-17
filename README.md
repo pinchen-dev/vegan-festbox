@@ -59,14 +59,27 @@
 - **Next.js 14 實踐**：運用 **App Router** 進行頁面路由規劃，並使用 **TypeScript** 提升程式碼的可維護性。
 - **響應式佈局**：使用 **Tailwind CSS** 確保在行動裝置與桌面端皆能流暢操作。
 
+## 🧪 測試開發實務 (Testing Practice)
+
+本專案整合了 Vitest 與 Playwright，確保核心邏輯與流程穩定。
+
+* **端對端測試 (Playwright)**：
+    * 模擬完整購物流（選品 ➔ 登入 ➔ 結帳）。
+    * **自動化後台操作**：模擬管理員切換訂單狀態（如：處理中 ➔ 已出貨），並驗證數據同步。
+* **單元測試 (Vitest)**：
+    * `InvoiceSchema` 驗證邏輯：處理全形轉半形、載具格式與統編校驗。
+* **穩定性優化**：針對下拉選單等非同步組件，導入 `dispatchEvent` 與等待機制，解決測試不穩定的問題。
+
 ## 🛠️ 技術棧 (Tech Stack)
 
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Database & Auth**: Prisma & Kinde Auth
+- **Styling**: Tailwind CSS & Shadcn UI
 - **Email Service**: Resend
 - **Components**: Shadcn UI & Lucide Icons
 - **Icons**: Lucide React
+- **Testing**: Vitest & Playwright
 - **Deployment**: Vercel
 
 ## 🚀 快速開始 (Getting started)
