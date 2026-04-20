@@ -53,7 +53,7 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
   
   await page.getByText('新年春節').click();
   await page.getByRole('button', { name: 'seal 新年春節' }).click();
-  await page.keyboard.press('Escape'); // 測試使用鍵盤關閉選單
+  await page.keyboard.press('Escape');
 
   // 開啟其他裝飾選項
   await page.locator('div').filter({ hasText: '天然環保亞麻繩' }).getByRole('switch').first().click();
@@ -73,7 +73,7 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
   await page.getByRole('combobox').filter({ hasText: '區域' }).click();
   await page.getByRole('option', { name: '仁愛區' }).click();
   await page.locator('input[name="address"]').fill('基隆路100號');
-  await page.getByPlaceholder(/ABC123D/i).fill('/K7TL32'); 
+  await page.getByPlaceholder(/ABC123D/i).fill('/K7TL+32'); 
 
   /**
    * 6. 登入攔截機制驗證
@@ -91,19 +91,16 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
       console.log('Log: 當前為客戶帳號，執行強制登出以切換管理員');
       await logoutBtn.click();
       await page.waitForURL(/\/$/);
-      // 登出後重新回到結帳點，再次觸發登入彈窗
       await page.goto('/configure/preview');
       await page.getByRole('button', { name: '立即結帳' }).click();
     }
   }
   
   try {
-    // 檢查是否出現登入彈窗，若已登入則會跳過此段
     await loginModalBtn.waitFor({ state: 'visible', timeout: 5000 });
     console.log('Log: 偵測到登入引導，執行登入動作');
     await loginModalBtn.click();
     
-    // 進入第三方登入頁面填寫帳號
     await page.waitForURL(url => url.href.includes('kinde.com'), { timeout: 20000 });
     const customerEmail = process.env.TEST_CUSTOMER_EMAIL;
   if (!customerEmail) {
@@ -114,7 +111,6 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
     
     // await page.pause();
     
-    // 驗證登入後是否自動跳回預覽頁面
     await page.waitForURL(/.*preview.*/, { timeout: 30000 });
   } catch (e) {
     console.log('Log: 目前為登入狀態，直接繼續結帳流程');
