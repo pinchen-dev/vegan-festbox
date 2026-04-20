@@ -53,7 +53,7 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
   
   await page.getByText('新年春節').click();
   await page.getByRole('button', { name: 'seal 新年春節' }).click();
-  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape'); // 測試使用鍵盤關閉選單
 
   // 開啟其他裝飾選項
   await page.locator('div').filter({ hasText: '天然環保亞麻繩' }).getByRole('switch').first().click();
@@ -64,7 +64,8 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
   /**
    * 5. Step4. 填寫資訊和確認
    */
-  await page.locator('input[name="name"]').fill('王XX');
+  await expect(page.getByText('Step 4')).toBeVisible({ timeout: 15000 });
+await page.locator('input[name="name"]').fill('王XX');
   await page.locator('input[name="phoneNumber"]').fill('0911904533');
   
   // 選擇地址與填寫載具
@@ -100,22 +101,25 @@ test('客戶完整下單流程 - 客製小卡和禮盒配置驗證', async ({ pa
     await loginModalBtn.waitFor({ state: 'visible', timeout: 5000 });
     console.log('Log: 偵測到登入引導，執行登入動作');
     await loginModalBtn.click();
-    
+
     await page.waitForURL(url => url.href.includes('kinde.com'), { timeout: 20000 });
     const customerEmail = process.env.TEST_CUSTOMER_EMAIL;
   if (!customerEmail) {
     throw new Error('TEST_CUSTOMER_EMAIL is not defined in .env');
   }
+  const emailInput = page.getByLabel('Email', { exact: false });
+   await emailInput.waitFor({ state: 'visible', timeout: 10000 });
+    await emailInput.click();
+  await emailInput.fill(customerEmail);
 
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     
-    // await page.pause();
-    
+     await page.pause();
+
     await page.waitForURL(/.*preview.*/, { timeout: 30000 });
   } catch (e) {
     console.log('Log: 目前為登入狀態，直接繼續結帳流程');
   }
-
   // 改選別的發票類型
   const paperRadio = page.getByText('個人紙本', { exact: true });
 await paperRadio.scrollIntoViewIfNeeded();
