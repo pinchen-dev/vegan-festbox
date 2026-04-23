@@ -54,10 +54,19 @@
 - **Resend API 整合**：串接第三方郵件服務，實作當訂單觸發後自動發送確認信的後端邏輯。
 - **購物流程閉環**：完成從產品挑選、模擬結帳到成功頁面的導覽路徑，確保使用者操作路徑 (User Flow) 的完整性。
 
-### 📱 技術架構與開發
+## 📱 技術架構與開發 (Technical Architecture)
 
 - **Next.js 14 實踐**：運用 **App Router** 進行頁面路由規劃，並使用 **TypeScript** 提升程式碼的可維護性。
 - **響應式佈局**：使用 **Tailwind CSS** 確保在行動裝置與桌面端皆能流暢操作。
+
+## 🗄️ 資料庫設計 (Database Schema)
+
+使用 **PostgreSQL** 與 **Prisma ORM** 進行開發，核心設計包含四張關聯資料表：
+
+- **User**：儲存使用者基本資料與身分驗證資訊。
+- **Configuration**：紀錄禮盒的客製化配置（顏色、材質、裝飾物），確保每個訂單的獨特性。
+- **Order**：核心業務邏輯表，關聯 `User` 與 `Configuration`，並採用台灣發票模式（個人、統編、載具）。
+- **ShippingAddress**：收件地址管理，與訂單採一對多關聯。
 
 ## 🧪 測試開發實務 (Testing Practice)
 
@@ -74,7 +83,8 @@
 
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Database & Auth**: Prisma & Kinde Auth
+- **Database**: PostgreSQL (Neon) via Prisma
+- **Auth**: Kinde Auth
 - **Styling**: Tailwind CSS & Shadcn UI
 - **Email Service**: Resend
 - **Components**: Shadcn UI & Lucide Icons

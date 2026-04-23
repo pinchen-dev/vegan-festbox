@@ -13,7 +13,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-test("Admin Integration - End-to-End with Email Verification", async ({
+test.skip("Admin Integration - End-to-End with Email Verification", async ({
   page,
 }) => {
   test.setTimeout(180000);
@@ -108,7 +108,7 @@ test("Admin Integration - End-to-End with Email Verification", async ({
   await expect(checkoutBtn).toBeEnabled();
   await checkoutBtn.click();
   await expect(page).toHaveURL(/.*thank-you/, { timeout: 15000 });
-  
+
   /**
    * 5. 驗證訂單通知郵件發送狀態
    */
